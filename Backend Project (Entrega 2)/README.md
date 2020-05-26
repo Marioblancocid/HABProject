@@ -4,7 +4,7 @@ En este repositorio encontrareis el backend de mi proyecto de Hack a Boss de una
 ----------------------------------------------------------------------------------------------------------------------------------------------------
 In this repository you can find my Hack a Boss project's backend about an app where you can meet people to learn languages by making social meetings.
 
-## Funcionamiento backend
+## Funcionamiento backend // How to use
 
 - Cubre el .env.example adecuadamente y guardalo como .env
 - Utiliza "node initDB.js" en el terminal para crear la estructura y la data inicial de la base de datos.
