@@ -6,17 +6,17 @@ In this repository you can find my Hack a Boss project's backend about an app wh
 
 ## Funcionamiento backend
 
-1-Cubre el .env.example adecuadamente y guardalo como .env
-2-Utiliza "node initDB.js" en el terminal para crear la estructura y la data inicial de la base de datos.
-3-Espera hasta que se llene la base de datos con la Random Data (Random Data: 500 users, 135 languages, 300 meetings, 500 user-languages inserts, 500 language-meetings inserts, 500 user-meetings inputs and 500 ratings).
-4-A juguetear!
+- Cubre el .env.example adecuadamente y guardalo como .env
+- Utiliza "node initDB.js" en el terminal para crear la estructura y la data inicial de la base de datos.
+- Espera hasta que se llene la base de datos con la Random Data (Random Data: 500 users, 135 languages, 300 meetings, 500 user-languages inserts, 500 language-meetings inserts, 500 user-meetings inputs and 500 ratings).
+- A juguetear!
 ----------------------------------------------------------------------------------------------------------------------------------------------------
-1-Fill the .env.example file properly and save it as .env
-2-Use "node initDB.js" in the terminal to create the database's structure and initial data.
-3-Wait while node.js writes all the Random Data (Random Data: 500 users, 135 languages, 300 meetings, 500 user-languages inserts, 500 language-meetings inserts, 500 user-meetings inputs and 500 ratings).
-4-Enjoy!
+- Fill the .env.example file properly and save it as .env
+- Use "node initDB.js" in the terminal to create the database's structure and initial data.
+- Wait while node.js writes all the Random Data (Random Data: 500 users, 135 languages, 300 meetings, 500 user-languages inserts, 500 language-meetings inserts, 500 user-meetings inputs and 500 ratings).
+- Enjoy!
 
-### User Routes
+### Rutas de usuario // User routes
 
 - /users - POST - Crea un nuevo usuario
 - /users/login - POST - Logea en tu user con un JSON con estos keys: email, user_password
@@ -36,7 +36,7 @@ In this repository you can find my Hack a Boss project's backend about an app wh
 - /users/:id - PUT - Edits your user
 - /users/:id - DELETE - "Deletes" (hides) an user (only if you are this user or an admin)
 
-### Diary Routes
+### Rutas de las charlas // Meeting routes
 
 - /entries - GET - Busca y muestra las charlas
 - /entries/:id - GET - Muestra la charla con ese id
