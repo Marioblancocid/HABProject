@@ -12,7 +12,7 @@ create table users (
     province varchar(255) not null,
     country varchar(255) not null,
     sex enum('Male', 'Female', 'Other'),
-    tel int not null,
+    tel varchar(50) not null,
     email varchar(255) not null,
     user_status varchar(255) not null,
     interests varchar(255) not null,
