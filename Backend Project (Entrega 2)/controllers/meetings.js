@@ -3,7 +3,9 @@ const { getConnection } = require('../db');
 const {
   formatDateToDB,
   processAndSavePhoto,
-  deletePhoto
+  deletePhoto,
+  emailToHost,
+  emailToUser
 } = require('../helpers');
 
 const { entrySchema, joinEntrySchema, allowJoinSchema, voteSchema, searchSchema } = require('./validations');
@@ -12,12 +14,102 @@ const { entrySchema, joinEntrySchema, allowJoinSchema, voteSchema, searchSchema 
 async function listEntries(req, res, next) {
   try {
     const connection = await getConnection();
-    const { search } = req.query;
+    const { search, filter } = req.query;
 
     let result;
 
+    
     if (search) {
       await searchSchema.validateAsync(search);
+      if (filter === 'lang') {
+
+        result = await connection.query(
+          `SELECT d.*, 
+        (SELECT AVG(stars) FROM ratings WHERE id_meetings=d.id) AS voteAverage,
+        r.lang_name
+        FROM meetings d
+        left join languages_meetings l
+        on d.id = l.id_meetings
+        left join languages r
+        on l.id_languages = r.id
+        WHERE d.hidden=false AND r.lang_name LIKE ? AND d.meeting_date>CURDATE() 
+        ORDER BY d.meeting_date ASC
+        LIMIT 20`,
+          [`%${search}%`]
+        );
+      } else if (filter === 'city') {
+        result = await connection.query(
+          `SELECT d.*, 
+        (SELECT AVG(stars) FROM ratings WHERE id_meetings=d.id) AS voteAverage,
+        r.lang_name
+        FROM meetings d
+        left join languages_meetings l
+        on d.id = l.id_meetings
+        left join languages r
+        on l.id_languages = r.id
+        WHERE d.hidden=false AND d.city LIKE ? AND d.meeting_date>CURDATE()
+        OR d.hidden=false AND d.country LIKE ? AND d.meeting_date>CURDATE()
+        OR d.hidden=false AND d.adress LIKE ? AND d.meeting_date>CURDATE() 
+        OR d.hidden=false AND d.province LIKE ? AND d.meeting_date>CURDATE() 
+        ORDER BY d.meeting_date ASC
+        LIMIT 20`,
+          [`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]
+        );
+      } else if (filter === 'level') {
+        result = await connection.query(
+          `SELECT d.*, 
+        (SELECT AVG(stars) FROM ratings WHERE id_meetings=d.id) AS voteAverage,
+        r.lang_name
+        FROM meetings d
+        left join languages_meetings l
+        on d.id = l.id_meetings
+        left join languages r
+        on l.id_languages = r.id
+        WHERE d.hidden=false AND d.lang_level LIKE ? AND d.meeting_date>CURDATE()
+        ORDER BY d.meeting_date ASC
+        LIMIT 20`,
+          [`%${search}%`]
+        );
+      } else if (filter === 'age') {
+        
+        var d = new Date();
+        const date = d.getFullYear() - parseInt(search, 10);
+        const min_date = date + '/01/01';
+        const max_date = (date + 10) + '/01/01';
+
+        result = await connection.query(
+          `SELECT d.*, 
+        (SELECT AVG(stars) FROM ratings WHERE id_meetings=d.id) AS voteAverage,
+        r.lang_name
+        FROM meetings d
+        left join users u
+        on d.id_user_host = u.id
+        left join languages_meetings l
+        on d.id = l.id_meetings
+        left join languages r
+        on l.id_languages = r.id
+        WHERE d.hidden=false AND u.birth_date between ? and ?  AND d.meeting_date>CURDATE() 
+        ORDER BY d.meeting_date ASC
+        LIMIT 20`, [min_date, max_date]
+        );
+      } else if (filter === 'interests') {
+        result = await connection.query(
+          `SELECT d.*, 
+        (SELECT AVG(stars) FROM ratings WHERE id_meetings=d.id) AS voteAverage,
+        r.lang_name
+        FROM meetings d
+        left join users u
+        on d.id_user_host = u.id
+        left join languages_meetings l
+        on d.id = l.id_meetings
+        left join languages r
+        on l.id_languages = r.id
+        WHERE d.hidden=false AND u.interests LIKE ? AND d.meeting_date>CURDATE() 
+        ORDER BY d.meeting_date ASC
+        LIMIT 20`,
+          [`%${search}%`]
+        );
+      } else {
 
       result = await connection.query(
         `SELECT d.*, 
@@ -28,21 +120,33 @@ async function listEntries(req, res, next) {
         on d.id = l.id_meetings
         left join languages r
         on l.id_languages = r.id
-        WHERE d.hidden=false AND d.title LIKE ? OR d.hidden=false AND d.commentary LIKE ? OR d.hidden=false AND r.lang_name LIKE ? OR d.hidden=false AND d.city LIKE ? OR d.hidden=false AND d.country LIKE ?
-        ORDER BY d.meeting_date DESC`,
+        WHERE d.hidden=false AND d.title LIKE ? AND d.meeting_date>CURDATE() 
+        OR d.hidden=false AND d.commentary LIKE ? AND d.meeting_date>CURDATE() 
+        OR d.hidden=false AND r.lang_name LIKE ? AND d.meeting_date>CURDATE() 
+        OR d.hidden=false AND d.city LIKE ?  AND d.meeting_date>CURDATE()
+        OR d.hidden=false AND d.country LIKE ? AND d.meeting_date>CURDATE()
+        ORDER BY d.meeting_date ASC
+        LIMIT 20`,
         [`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]
       );
+      }
     } else {
       result = await connection.query(
-        `SELECT meetings.*, 
-        (SELECT AVG(stars) FROM ratings WHERE id_meetings=meetings.id) AS voteAverage
-        FROM meetings WHERE meetings.hidden=false
-        ORDER BY meetings.meeting_date DESC`
+        `SELECT d.*, 
+        (SELECT AVG(stars) FROM ratings WHERE id_meetings=d.id) AS voteAverage,
+        r.lang_name
+        FROM meetings d
+        left join languages_meetings l
+        on d.id = l.id_meetings
+        left join languages r
+        on l.id_languages = r.id
+        WHERE d.hidden=false AND d.meeting_date>CURDATE()
+        ORDER BY d.meeting_date ASC
+        LIMIT 20`
       );
     }
 
-    const [entries] = result;
-
+    const [entries] = result; 
     connection.release();
 
     res.send({
@@ -58,9 +162,11 @@ async function listEntries(req, res, next) {
 async function newEntry(req, res, next) {
   //Meterlos en la base de datos
   try {
+    console.log(req.body);
     await entrySchema.validateAsync(req.body);
-
+    
     const { language, meeting_date, title, online_meeting, adress, city, province, country, min_users, max_users, sex, commentary, duration_minutes, lang_level } = req.body;
+    
 
     let savedFileName;
 
@@ -124,6 +230,109 @@ async function newEntry(req, res, next) {
   }
 }
 
+//GET -- /entries/join/:id
+async function getPeopleInAMeeting(req, res, next) {
+  try {
+  const { id } = req.params;
+  const connection = await getConnection();
+    const [results] = await connection.query(
+  'Select * from users_meetings where id_meetings=? AND user_admitted=1',
+  [id]
+    ); 
+  
+  connection.release();
+
+    res.send({
+      status: 'ok',
+      data: results
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+//GET -- /entries/allJoins/:id
+async function getAllPeopleInAMeeting(req, res, next) {
+  try {
+    const { id } = req.params;
+    const connection = await getConnection();
+    const [results] = await connection.query(
+      `Select a.*, b.*
+      FROM users_meetings a
+      left join users b
+      on a.id_users = b.id
+      where id_meetings=?`,
+      [id]
+    );
+    `SELECT d.*, 
+        (SELECT AVG(stars) FROM ratings WHERE id_meetings=d.id) AS voteAverage,
+        r.lang_name
+        FROM meetings d
+        left join languages_meetings l
+        on d.id = l.id_meetings
+        left join languages r
+        on l.id_languages = r.id
+        WHERE d.hidden=false AND d.meeting_date>CURDATE()
+        ORDER BY d.meeting_date ASC`
+    connection.release();
+
+    res.send({
+      status: 'ok',
+      data: results
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+//GET -- /entries/myMeetings/:id
+async function getMyMeetings(req, res, next) {
+  try {
+    const { id } = req.params;
+    const connection = await getConnection();
+    const [results] = await connection.query(
+      `Select a.*, b.*
+      from users_meetings a 
+      left join meetings b 
+      on a.id_meetings = b.id
+      where a.id_users=? and b.hidden=0`,
+      [id]
+    );
+
+    connection.release();
+
+    res.send({
+      status: 'ok',
+      data: results
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+//GET -- /entries/myMeetings/:id
+async function getMyMeetingsHosted(req, res, next) {
+  try {
+    const { id } = req.params;
+    const connection = await getConnection();
+    const [results] = await connection.query(
+      `Select *
+      from meetings 
+      where id_user_host=? and hidden=0`,
+      [id]
+    );
+
+    connection.release();
+
+    res.send({
+      status: 'ok',
+      data: results
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 // POST -- /entries/join/:id
 async function joinEntry(req, res, next) {
   try {
@@ -171,6 +380,28 @@ async function joinEntry(req, res, next) {
 
     const { message } = req.body;
 
+    const [emailHost] = await connection.query(
+      `SELECT a.email 
+      from users a
+      left join meetings b
+      on a.id = b.id_user_host
+      where b.id=?`,
+      [id]
+    );
+    console.log(emailHost);
+    try {
+      await emailToHost({
+        email: emailHost,
+        title: 'Alguien se ha apuntado a tu evento!',
+        content: `El usuario te ha enviado este mensaje junto con la peticion: ${message}`
+      });
+    } catch (error) {
+      console.error(error.response.body);
+      throw new Error(
+        'Error sending the confirmation email. Try again later.'
+      );
+    }
+    
 
     await connection.query(
       'INSERT INTO users_meetings(id_users, id_meetings, join_message) VALUES(?, ?, ?)',
@@ -225,6 +456,22 @@ async function allowJoin(req, res, next) {
 
     await allowJoinSchema.validateAsync(req.body);
 
+    const [useremail] = await connection.query(
+      'select email from users where id=?',
+      [id_user_join]
+    );
+    try {
+      await emailToUser({
+        email: useremail,
+        title: 'Te han aceptado en el evento!',
+        content: `No faltes a la charla, aprenderemos un monton!`
+      });
+    } catch (error) {
+      console.error(error.response.body);
+      throw new Error(
+        'Error sending the confirmation email. Try again later.'
+      );
+    }
 
     await connection.query(
       'UPDATE users_meetings SET user_admitted=1 WHERE id_users=? AND id_meetings=?',
@@ -249,6 +496,7 @@ async function allowJoin(req, res, next) {
 async function editEntry(req, res, next) {
   try {
         const {
+          language,
           meeting_date,
           title,
           online_meeting,
@@ -292,6 +540,12 @@ async function editEntry(req, res, next) {
           error.httpCode = 401;
           throw error;
         }
+
+        // CAMBIAR EL LANGUAGE 
+        console.log(language, id);
+
+        let [[newIdLang]] = await connection.query('SELECT id FROM languages WHERE lang_name=?', [language]);
+        await connection.query('UPDATE languages_meetings SET id_languages=? WHERE id_meetings=?', [newIdLang.id, id]);
 
         let savedFileName;
 
@@ -372,7 +626,7 @@ async function getEntry(req, res, next) {
     const connection = await getConnection();
 
     const [result] = await connection.query(
-      `select d.id, d.title, d.online_meeting, d.adress, d.city, d.province, d.country, d.min_users, d.max_users, d.sex, d.commentary, d.duration_minutes, d.lang_level, d.id_user_host, d.creation_date, r.lang_name, avg(v.stars) as vote
+      `select d.*, z.first_name, z.second_name, r.lang_name, avg(v.stars) as vote
       from meetings d
       left join ratings v
       on d.id = v.id_meetings
@@ -380,7 +634,9 @@ async function getEntry(req, res, next) {
       on d.id = l.id_meetings
       left join languages r
       on l.id_languages = r.id
-      WHERE d.id = ?
+      left join users z
+      on d.id_user_host = z.id
+      WHERE d.hidden=false AND d.id=?
       GROUP BY r.lang_name`,
       [id]
     );
@@ -434,7 +690,6 @@ async function deleteEntry(req, res, next) {
 async function voteEntry(req, res, next) {
   try {
     const { id } = req.params;
-
     // Validate payload
     await voteSchema.validateAsync(req.body);
 
@@ -466,7 +721,7 @@ async function voteEntry(req, res, next) {
       error.httpCode = 403;
       throw error;
     }
-
+/* 
     // Check if the user went to the meeting 
     const [
       userJoin
@@ -479,7 +734,7 @@ async function voteEntry(req, res, next) {
       const error = new Error('You can not vote a meeting if you didnt join it');
       error.httpCode = 403;
       throw error;
-    }
+    } */
 
     //Vote
     await connection.query(
@@ -527,6 +782,10 @@ module.exports = {
   newEntry,
   joinEntry,
   allowJoin,
+  getPeopleInAMeeting,
+  getAllPeopleInAMeeting,
+  getMyMeetings,
+  getMyMeetingsHosted,
   getEntry,
   deleteEntry,
   editEntry,

@@ -6,7 +6,6 @@ const { generateError } = require('../helpers');
 
 async function userIsAuthenticated(req, res, next) {
   let connection;
-
   try {
     // Check if the authorization header is valid
     const { authorization } = req.headers;
@@ -14,11 +13,11 @@ async function userIsAuthenticated(req, res, next) {
     if (!authorization) {
       throw generateError('Falta la cabecera de Authorization');
     }
-
+    
     const authorizationParts = authorization.split(' ');
-
+    
     let token;
-
+    
     if (authorizationParts.length === 1) {
       token = authorization;
     } else if (authorizationParts[0] === 'Bearer') {
@@ -26,9 +25,9 @@ async function userIsAuthenticated(req, res, next) {
     } else {
       throw generateError('No puedo leer el token');
     }
-
+    
     let decoded;
-
+    
     try {
       decoded = jwt.verify(token, process.env.SECRET);
     } catch (error) {

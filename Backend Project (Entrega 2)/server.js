@@ -17,6 +17,9 @@ const {
   newUser,
   getUser,
   editUser,
+  checkEmail,
+  getUserName,
+  getLanguages,
   loginUser,
   updatePasswordUser,
   validateUser,
@@ -30,6 +33,10 @@ const {
   joinEntry,
   allowJoin,
   getEntry,
+  getPeopleInAMeeting,
+  getAllPeopleInAMeeting,
+  getMyMeetings,
+  getMyMeetingsHosted,
   deleteEntry,
   editEntry,
   voteEntry,
@@ -57,7 +64,10 @@ app.use(express.static(path.join(__dirname, 'static')));
 // User Routes
 app.post('/users', newUser); //Create a new user
 app.post('/users/login', loginUser); //Login with your user with a json with this keys: email, user_password
+app.post('/email', checkEmail); //Checks if an email already exists
 app.get('/users/validate', validateUser); //Validate your email by clicking the link received in your mail
+app.get('/userName', getUserName); //Gets an username with an id input
+app.get('/languages', getLanguages); //Gets all languages in an array
 app.post('/users/:id/password', userIsAuthenticated, updatePasswordUser); //Changes password
 app.get('/users/:id', userIsAuthenticated, getUser); //Gets info about an user
 app.put('/users/:id', userIsAuthenticated, editUser); //Edits your user
@@ -68,6 +78,10 @@ app.get('/entries', listEntries); //Searchs and list meetings
 app.get('/entries/:id', getEntry); //Gets one meeting
 app.post('/entries', userIsAuthenticated, newEntry); // Creates a new meeting
 app.post('/entries/join/:id', userIsAuthenticated, joinEntry); // A user joins a meeting (only if they didnt created it)
+app.get('/entries/join/:id', userIsAuthenticated, getPeopleInAMeeting); // Gets how much people is on the meeting
+app.get('/entries/allJoins/:id', userIsAuthenticated, getAllPeopleInAMeeting); // Gets how much people is on the meeting
+app.get('/entries/myMeetings/:id', userIsAuthenticated, getMyMeetings); // Gets my Meetings
+app.get('/entries/myMeetingsHosted/:id', userIsAuthenticated, getMyMeetingsHosted); // Gets my Meetings Hosted
 app.put('/entries/join/:id', userIsAuthenticated, allowJoin); // The host allows users to join his meeting
 app.get('/entries/:id/votes', getEntryVotes); // Get rating of a meeting
 app.post('/entries/:id/votes', userIsAuthenticated, voteEntry); // Vote a meeting (Only if you joinned it)

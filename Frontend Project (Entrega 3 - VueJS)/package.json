@@ -1,0 +1,28 @@
+{
+  "name": "coffeeandtalk",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "boxicons": "^2.0.5",
+    "core-js": "^3.6.5",
+    "jwt-decode": "^2.2.0",
+    "rating": "^0.1.0",
+    "sweetalert2": "^9.15.1",
+    "vue": "^2.6.11",
+    "vue-headful": "^2.1.0",
+    "vue-router": "^3.2.0",
+    "vue-star": "0.0.4",
+    "vue-star-rating": "^1.6.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.4.0",
+    "@vue/cli-plugin-router": "~4.4.0",
+    "@vue/cli-service": "~4.4.0",
+    "vue-template-compiler": "^2.6.11"
+  }
+}

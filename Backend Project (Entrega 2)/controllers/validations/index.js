@@ -137,16 +137,17 @@ const userLoginSchema = Joi.object().keys({
 
 const editUserSchema = Joi.object().keys({
   email: emailSchema,
-  first_name: Joi.string()
-    .max(255)
-    .error(
-      generateError('Name cant be longer than 255 characters.', 400)
-    ),
-  second_name: Joi.string()
-    .max(255)
-    .error(
-      generateError('Second name cant be longer than 255 characters.', 400)
-    )
+  first_name: varcharSchema,
+  second_name: varcharSchema,
+  birth_date: Joi.date().required(),
+  adress: varcharSchema,
+  province: varcharSchema,
+  city: varcharSchema,
+  country: varcharSchema,
+  sex: varcharSchema,
+  tel: varcharSchema,
+  user_status: varcharSchema,
+  interests: varcharSchema
 });
 
 const editPasswordUserSchema = Joi.object().keys({

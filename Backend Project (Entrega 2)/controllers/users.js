@@ -137,6 +137,83 @@ async function validateUser(req, res, next) {
   }
 }
 
+// GET - /userName
+async function getUserName(req, res, next) {
+  try {
+    const connection = await getConnection();
+
+    let result;
+
+    let id = req.body.id;
+
+    result = await connection.query(
+      `SELECT first_name, second_name, email
+      from users
+      where id=?`, [id],
+    );
+
+    connection.release();
+
+    res.send({
+      status: 'ok',
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// GET - /languages
+async function getLanguages(req, res, next) {
+  try {
+    const connection = await getConnection();
+
+    let result;
+
+    result = await connection.query(
+        `SELECT lang_name from languages`,
+      );
+
+    connection.release();
+
+    res.send({
+      status: 'ok',
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// POST - /email
+async function checkEmail(req, res, next) {
+  try {
+    const connection = await getConnection();
+
+    const email = req.body.email
+
+    let result;
+
+    [[result]] = await connection.query(
+      `SELECT email from users where email=?`,[email]
+    );
+
+    connection.release();
+    
+    if (result.email) {
+    res.send({
+        status: 'ok',
+        emailExists: true
+      })
+    }
+  } catch (error) {
+    res.send({
+      status: 'error',
+      emailExists: false
+    });
+  }
+}
+
 // GET - /users/:id
 async function getUser(req, res, next) {
   let connection;
@@ -147,7 +224,7 @@ async function getUser(req, res, next) {
 
     const [result] = await connection.query(
       `
-      SELECT id, creation_date, email, role, first_name, user_img 
+      SELECT * 
       FROM users WHERE id=?  
     `,
       [id]
@@ -155,13 +232,16 @@ async function getUser(req, res, next) {
     const [userData] = result;
     
     //Gets user language
-
-    const [lang] = await connection.query(
+    
+    let [lang] = await connection.query(
       'SELECT id_languages from users_languages where id_users=?', [id]);
 
-    const [main_lang] = await connection.query(
-      'SELECT lang_name from languages where id=?', [lang[0].id_languages]);
+    let main_lang = [{lang_name: 'English'}];
 
+    if (lang[0]) {
+    [main_lang] = await connection.query(
+      'SELECT lang_name from languages where id=?', [lang[0].id_languages]);
+    }
     
     // Throw 404 if no results
     if (!result.length) {
@@ -173,11 +253,24 @@ async function getUser(req, res, next) {
       creation_date: userData.creation_date,
       first_name: userData.first_name,
       user_img: userData.user_img,
-      main_language: main_lang[0].lang_name
+      main_language: main_lang[0].lang_name,
+      birth_date: userData.birth_date,
+      second_name: userData.second_name,
+      id : userData.id
+
     };
     if (userData.id === req.auth.id || req.auth.role === 'admin') {
       payload.email = userData.email;
       payload.role = userData.role;
+      payload.adress = userData.adress;
+      payload.city = userData.city;
+      payload.province = userData.province;
+      payload.country = userData.country;
+      payload.sex = userData.sex;
+      payload.tel = userData.tel;
+      payload.user_status = userData.user_status;
+      payload.interests = userData.interests;
+      payload.last_modification = userData.last_modification;
     }
     
     res.send({
@@ -201,7 +294,6 @@ async function loginUser(req, res, next) {
     const { email, user_password } = req.body;
 
     connection = await getConnection();
-
     // Find the user in the db by email
     const [
       dbUser
@@ -218,7 +310,6 @@ async function loginUser(req, res, next) {
     }
 
     const [user] = dbUser;
-    console.log(user);
     const passwordsMath = await bcrypt.compare(user_password, user.user_password);
 
     if (!passwordsMath) {
@@ -235,7 +326,9 @@ async function loginUser(req, res, next) {
     res.send({
       status: 'ok',
       message: 'Login correcto',
-      data: { token }
+      data: { 
+        token: token,
+        id: user.id }
     });
   } catch (error) {
     next(error);
@@ -252,7 +345,7 @@ async function editUser(req, res, next) {
     await editUserSchema.validateAsync(req.body);
 
     const { id } = req.params;
-    const { first_name, second_name, email } = req.body;
+    const { first_name, second_name, birth_date, adress, province, city, country, sex, tel, user_status, interests } = req.body;
 
     connection = await getConnection();
 
@@ -296,9 +389,9 @@ async function editUser(req, res, next) {
 
     await connection.query(
       `
-      UPDATE users SET first_name=?, second_name=?, email=?, user_img=? WHERE id=?
+      UPDATE users SET first_name=?, second_name=?, birth_date=?, adress=?, province=?, city=?, country=?, sex=?, tel=?, user_status=?, interests=?, user_img=? WHERE id=?
     `,
-      [first_name, second_name, email, savedFileName, id]
+      [first_name, second_name, birth_date, adress, province, city, country, sex, tel, user_status, interests, savedFileName, id]
     );
 
     res.send({ status: 'ok', message: 'Usuario actualizado' });
@@ -390,14 +483,18 @@ async function deleteUser(req, res, next) {
     const connection = await getConnection();
 
     const { id } = req.params;
-
     if (req.auth.role !== 'admin' && req.auth.id !== parseInt(id)) {
       const error = new Error(`You must be an admin or the same user as the profile you try to delete`);
       error.httpCode = 500;
       throw error;
     }
+    const [[email]] = await connection.query('SELECT email from users WHERE id=?', [req.auth.id]);
 
-    await connection.query('UPDATE users SET hidden=1 WHERE id=?', [req.auth.id]);
+    const formatedMail = 'DELETED: ' + email.email;
+
+    await connection.query('UPDATE users SET hidden=1, email=? WHERE id=?', [formatedMail, req.auth.id]);
+    await connection.query('UPDATE meetings SET hidden=1 where id_user_host=?', [req.auth.id]);
+    await connection.query('DELETE FROM users_meetings WHERE id_users=?', [req.auth.id]);
 
     connection.release();
 
@@ -414,6 +511,9 @@ async function deleteUser(req, res, next) {
 module.exports = {
   newUser,
   loginUser,
+  getUserName,
+  getLanguages,
+  checkEmail,
   getUser,
   editUser,
   updatePasswordUser,

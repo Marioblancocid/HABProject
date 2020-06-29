@@ -27,7 +27,7 @@ async function processSQLFile(fileName) {
     .filter(function (el) {
       return el.length != 0;
     }); // remove any empty ones
-    console.log(`Importing Random Data: 500 users, 135 languages, 300 meetings, 500 user-languages inserts, 500 language-meetings inserts, 500 user-meetings inputs and 500 ratings`);
+    console.log(`Importing Random Data: 500 users, 135 languages, 300 meetings, 500 user-languages inserts, 300 language-meetings inserts, 500 user-meetings inputs and 500 ratings`);
     console.log(`This can take a few minutes, please wait...`);
     // Execute each SQL query sequentially
   for (const query of queries) {
