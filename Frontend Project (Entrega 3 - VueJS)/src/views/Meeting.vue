@@ -5,21 +5,14 @@
     <!-- MENU -->
     <menucustom id="menumeetingview"></menucustom>
 
-    <!--  SIMBOLO DE CARGA  -->
-    <div v-show="loading" class="lds-roller">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
+<!--  SIMBOLO DE CARGA  -->
+    <div id="spinner" v-show="loading">
+    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    </div>  
 
 
 <section class="flexmeeting">
-  <img v-show="!loading" src="../assets/meeting.svg" alt="profile image">
+  <img id="undraw" v-show="!loading" src="../assets/meeting.svg" alt="profile image">
 <section v-show="!loading" id="meetingCard">
     <!-- meeting VIEW -->
     <meetingview
@@ -307,7 +300,7 @@ export default {
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.125);
   border-radius: 30px;
   margin: 2rem;
-  padding: 1rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -323,6 +316,7 @@ export default {
   min-width: 80%;
   align-self: center;
   margin: 1rem 0 2rem 0;
+  border: 5px solid black;
 }
 .meetingview button {
   padding: 0.6rem 0rem 0.6rem 1.5rem;
@@ -342,8 +336,9 @@ export default {
   background: none;
   color: rgb(138, 118, 118);
 }
-.meetingview img {
-  max-width: 700px;
+.meetingview img#undraw{
+  max-width: 900px;
+  margin-top: 5rem;
 }
 .meetingview a {
   color: #8A7676;
@@ -423,83 +418,48 @@ body {
   align-content: center;
   justify-content: center;
 }
-.lds-roller {
-  display: inline-block;
+#spinner {
+  min-height: 40vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  width: 80px;
-  height: 80px;
 }
-.lds-roller div {
-  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  transform-origin: 40px 40px;
+.lds-ring {
+  width: 400px;
+  height: 200px;
+  border-radius: 100px;
+  background: #3F3D56;
+  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
 }
-.lds-roller div:after {
-  content: " ";
+.lds-ring div {
+  box-sizing: border-box;
   display: block;
   position: absolute;
-  width: 7px;
-  height: 7px;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 8px solid #fff;
   border-radius: 50%;
-  background: cadetblue;
-  margin: -4px 0 0 -4px;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #fff transparent transparent transparent;
 }
-.lds-roller div:nth-child(1) {
-  animation-delay: -0.036s;
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
 }
-.lds-roller div:nth-child(1):after {
-  top: 63px;
-  left: 63px;
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
 }
-.lds-roller div:nth-child(2) {
-  animation-delay: -0.072s;
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
 }
-.lds-roller div:nth-child(2):after {
-  top: 68px;
-  left: 56px;
-}
-.lds-roller div:nth-child(3) {
-  animation-delay: -0.108s;
-}
-.lds-roller div:nth-child(3):after {
-  top: 71px;
-  left: 48px;
-}
-.lds-roller div:nth-child(4) {
-  animation-delay: -0.144s;
-}
-.lds-roller div:nth-child(4):after {
-  top: 72px;
-  left: 40px;
-}
-.lds-roller div:nth-child(5) {
-  animation-delay: -0.18s;
-}
-.lds-roller div:nth-child(5):after {
-  top: 71px;
-  left: 32px;
-}
-.lds-roller div:nth-child(6) {
-  animation-delay: -0.216s;
-}
-.lds-roller div:nth-child(6):after {
-  top: 68px;
-  left: 24px;
-}
-.lds-roller div:nth-child(7) {
-  animation-delay: -0.252s;
-}
-.lds-roller div:nth-child(7):after {
-  top: 63px;
-  left: 17px;
-}
-.lds-roller div:nth-child(8) {
-  animation-delay: -0.288s;
-}
-.lds-roller div:nth-child(8):after {
-  top: 56px;
-  left: 12px;
-}
-@keyframes lds-roller {
+@keyframes lds-ring {
   0% {
     transform: rotate(0deg);
   }

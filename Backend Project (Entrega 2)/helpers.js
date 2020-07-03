@@ -31,6 +31,34 @@ async function processAndSavePhoto(uploadedImage) {
 
   // If image is wider than 500px resize it
   if (imageInfo.width > 500) {
+    finalImage.resize({
+      width: 450,
+      height: 300
+    });
+  }
+
+  // Save image
+  await finalImage.toFile(path.join(imageUploadPath, savedFileName));
+
+  return savedFileName;
+}
+
+// Save a photo and get filename
+async function processAndSaveProfilePhoto(uploadedImage) {
+  // Random File name to be saved
+  const savedFileName = `${uuid.v1()}.jpg`;
+
+  // Ensure the uploads path exists
+  await fs.ensureDir(imageUploadPath);
+
+  // Process image
+  const finalImage = sharp(uploadedImage.data);
+
+  // Check image size
+  const imageInfo = await finalImage.metadata();
+
+  // If image is wider than 500px resize it
+  if (imageInfo.width > 500) {
     finalImage.resize(500);
   }
 
@@ -61,8 +89,14 @@ async function sendEmail({ email, title, content }) {
     subject: title,
     text: content,
     html: `<div>
-      <h1>Validate your email</h1>
-      <p>${content}</p>  
+        <h1 style="color:#3F3D56;">Valida tu email en <span style="text-decoration:underline;">Coffee & Talk:</span></h1>
+    <h2 style="color:black;">Déjanos confirmar que eres tú clicando en este enlace: ${content}</h2>
+    <h2 style="color:black;">¿Preparad@ para aprender idiomas de la mejor manera posible?</h2>
+    <br>
+    <br>
+    <br>
+    <footer  style="color:black; font-side:0.5rem">Mario Blanco Cid © 2020 - Hack a Boss</footer>
+
     </div>`
   };
 
@@ -116,6 +150,7 @@ function generateError(message, code) {
 module.exports = {
   formatDateToDB,
   processAndSavePhoto,
+  processAndSaveProfilePhoto,
   deletePhoto,
   randomString,
   sendEmail,

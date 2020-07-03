@@ -5,17 +5,10 @@
     <!-- MENU -->
     <menucustom id="menuProfile"></menucustom>
 
-    <!--  SIMBOLO DE CARGA  -->
-    <div v-show="loading" class="lds-roller">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
+<!--  SIMBOLO DE CARGA  -->
+    <div id="spinner" v-show="loading">
+    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    </div>  
 <section class="flexprofile">
   <img v-show="!loading" src="../assets/perfil.svg" alt="profile image">
 <section v-show="!loading" id="profileCard">
@@ -65,6 +58,10 @@
       <option value="Other">Otro</option>
     </select>
     </section>
+    <section>
+          <label for="imgmeeting">Sube una imagen:</label>
+    <input type="file" id="file" ref="file" accept="image/png, image/jpg, image/jpeg" v-on:change="handleFileUpload()"/>
+    </section>
     <textarea minlength="3" maxlength="100" required type="text" placeholder="Introduce un comentario sobre ti" v-model="user_status">
     </textarea>
     <section>
@@ -101,8 +98,8 @@
 </template>
 
 <script>
-import menucustom from "@/components/MenuCustom.vue";
-import { clearLogin } from '../api/utils'
+import menucustom from "@/components/MenuCustom.vue"; 
+import { clearLogin, editUser } from '../api/utils'
 import ProfileComponent from "@/components/ProfileComponent.vue";
 
 import axios from "axios";
@@ -137,6 +134,7 @@ export default {
       user_status: '',
       interests: '',
       id: '',
+      file: '',
       id_viewer: ''
     };
   },
@@ -179,6 +177,9 @@ export default {
         }
       })
     },
+    handleFileUpload(){
+        this.file = this.$refs.file.files[0];
+    }, 
     deleteUser() {
       let self = this;
       axios
@@ -223,35 +224,34 @@ export default {
           }
         });
     },
-    edite() {
+    async edite() {
       let self = this;
-      axios
-        .put(
-          "http://localhost:3001/users/" + this.profile.id,
-          { 
-            email: this.email,
-            first_name: this.first_name,
-            second_name: this.second_name,
-            birth_date: this.birth_date,
-            adress: this.adress,
-            province: this.province,
-            city: this.city,
-            country: this.country,
-            sex: this.sex,
-            tel: this.tel,
-            user_status: this.user_status,
-            interests: this.interests
-          }
-        )
-        .then(function(response) {
-          console.log(response);
-          location.reload();
-        })
-        .catch(function(error) {
-          if (error.response) {
-            alert(error.response.data.message);
-          }
+      try {
+          const photoFormData = new FormData();
+            // dict of all elements
+          photoFormData.append("email", self.email);
+          photoFormData.append("first_name", self.first_name);
+          photoFormData.append("second_name", self.second_name);
+          photoFormData.append("birth_date", self.birth_date);
+          photoFormData.append("adress", self.adress);
+          photoFormData.append("city", self.city);
+          photoFormData.append("sex", self.sex);
+          photoFormData.append("country", self.country);
+          photoFormData.append("tel", self.tel);
+          photoFormData.append("user_status", self.user_status);
+          photoFormData.append("interests", self.interests);
+          photoFormData.append("province", self.province);
+          if (self.file.name) {
+          photoFormData.append("photo", self.file);
+          };
+          await editUser(photoFormData, self.id);
+          Swal.fire({
+          icon: "success",
+          title: "Has editado tu perfil!"
         });
+        } catch (error) {
+          alert(error.response.data.message);
+        };
     },
     closeModal() {
       this.modalEdit = false;
@@ -344,6 +344,9 @@ export default {
   min-width: 100vw;
   min-height: 100vh;
 }
+.Perfil img {
+  border-radius: 50%;
+}
 .Perfil button {
   padding: 0.6rem 0rem 0.6rem 1.5rem;
   border-radius: 20px;
@@ -386,7 +389,10 @@ export default {
   border-radius: 20px;
   border: 1px solid #3F3D56;
 }
-
+.modalBox input#file {
+  border: none;
+  max-width: 50%;
+}
 .modalBox textarea {
   min-width: 50%;
   min-height: 6rem;
@@ -413,84 +419,48 @@ export default {
   max-width: 30%;
   margin-top: 0.5rem;
 }
-
-.lds-roller {
-  display: inline-block;
+#spinner {
+  min-height: 40vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  width: 80px;
-  height: 80px;
 }
-.lds-roller div {
-  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  transform-origin: 40px 40px;
+.lds-ring {
+  width: 400px;
+  height: 200px;
+  border-radius: 100px;
+  background: #3F3D56;
+  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
 }
-.lds-roller div:after {
-  content: " ";
+.lds-ring div {
+  box-sizing: border-box;
   display: block;
   position: absolute;
-  width: 7px;
-  height: 7px;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 8px solid #fff;
   border-radius: 50%;
-  background: cadetblue;
-  margin: -4px 0 0 -4px;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #fff transparent transparent transparent;
 }
-.lds-roller div:nth-child(1) {
-  animation-delay: -0.036s;
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
 }
-.lds-roller div:nth-child(1):after {
-  top: 63px;
-  left: 63px;
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
 }
-.lds-roller div:nth-child(2) {
-  animation-delay: -0.072s;
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
 }
-.lds-roller div:nth-child(2):after {
-  top: 68px;
-  left: 56px;
-}
-.lds-roller div:nth-child(3) {
-  animation-delay: -0.108s;
-}
-.lds-roller div:nth-child(3):after {
-  top: 71px;
-  left: 48px;
-}
-.lds-roller div:nth-child(4) {
-  animation-delay: -0.144s;
-}
-.lds-roller div:nth-child(4):after {
-  top: 72px;
-  left: 40px;
-}
-.lds-roller div:nth-child(5) {
-  animation-delay: -0.18s;
-}
-.lds-roller div:nth-child(5):after {
-  top: 71px;
-  left: 32px;
-}
-.lds-roller div:nth-child(6) {
-  animation-delay: -0.216s;
-}
-.lds-roller div:nth-child(6):after {
-  top: 68px;
-  left: 24px;
-}
-.lds-roller div:nth-child(7) {
-  animation-delay: -0.252s;
-}
-.lds-roller div:nth-child(7):after {
-  top: 63px;
-  left: 17px;
-}
-.lds-roller div:nth-child(8) {
-  animation-delay: -0.288s;
-}
-.lds-roller div:nth-child(8):after {
-  top: 56px;
-  left: 12px;
-}
-@keyframes lds-roller {
+@keyframes lds-ring {
   0% {
     transform: rotate(0deg);
   }

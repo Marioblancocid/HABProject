@@ -1,8 +1,8 @@
 <template>
   <div class="meetinglist">
-    <div class="meeting" v-for="meeting in meetings" :key="meeting.id">
+    <div class="meetingCardList" v-for="meeting in meetings" :key="meeting.id">
       <a :href="path + meeting.id">
-      <img :src="meeting.id ? getPhoto(meeting.id) : null" alt />
+      <img :src="meeting.id ? getPhoto(meeting.id, meeting.image) : null" alt />
       <section>
       <p><span>Título:</span> {{ formatTitle(meeting.title) }}</p>
       <p><span>Fecha:</span> {{ formatDate(meeting.meeting_date) }}</p>
@@ -20,14 +20,18 @@ export default {
   name: "Listameetings",
   data() {
     return {
-      path: "http://localhost:8080/#/meeting/"
+      path: "http://localhost:8080/#/meeting/",
+      pathimg: "http://localhost:3001/uploads/"
     };
   },
   props: {
     meetings: Array
   },
   methods: {
-    getPhoto(id) {
+    getPhoto(id, image) {
+      if (image) {
+        return (this.pathimg + image)
+      }
     let lastNumber = id.toString().split('').pop();
     return `http://localhost:3001/imgbares/${lastNumber}.jpeg`
     },
@@ -73,12 +77,12 @@ export default {
   justify-content: space-around;
   padding: 0;
 }
-.meeting a {
+.meetingCardList a {
   color: white;
   font-weight: bold;
   text-decoration: none;
 }
-.meeting p {
+.meetingCardList p {
   margin: auto;
   padding: 0 0 0 0.5rem;
   font-weight: 500;
@@ -86,24 +90,24 @@ export default {
   background-color: rgba(0, 0, 0, 0.76);
   margin-bottom: .6rem;
 }
-.meeting span {
+.meetingCardList span {
   font-weight: bold;
 }
-.meeting {
-  width: 350px;
-  height: auto;
+.meetingCardList {
+  width: 380px;
+  height: 280px;
   margin: 0.5rem;
   position: relative;
   color: white;
   font-weight: bold;
 }
-.meeting img {
+.meetingCardList img {
   max-width: 100%;
   max-height: 100%;
   border: 2px black solid;
 }
 
-.meeting section {
+.meetingCardList section {
   min-width: 90%;
   position: absolute;
   top: 50%;

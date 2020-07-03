@@ -8,7 +8,11 @@
       <!--APLICAMOS EL CAMBIO DE NOMBRE DINAMICO-->
     <vue-headful title="Registro"
     description="Página de registro de la aplicación."/>
-    <form>
+
+
+    <section class="flexregister">
+    <img src="../assets/Register.svg" alt="Register image">  
+    <form id="registerform">
     <h2 id="titulo">
       Empieza ya a aprender idiomas 
     </h2>
@@ -120,10 +124,8 @@
     
     <section>
     <label for="">Comentario:</label>
-    <input minlength="3" maxlength="100" required type="text" placeholder="Introduce un comentario sobre ti" v-model="user_status">
+    <input minlength="3" maxlength="100" required type="text" placeholder="Introduce un comentario" v-model="user_status">
     </section>
-
-    </form>
 
 <a href="#" @click='addUser()' class="cta">
   <span id="regispan">Register</span>
@@ -132,7 +134,9 @@
     <polyline points="8 1 12 5 8 9"></polyline>
   </svg>
 </a>
-  
+    </form>
+
+  </section>
   </div>
   <FooterCustom id="footer"></FooterCustom>
   </div>
@@ -280,6 +284,11 @@ export default {
 <style> 
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;1,300&display=swap');
 
+.flexregister {
+  display: flex;
+  flex-direction: row;
+}
+
 :focus {
 outline:none;
 }
@@ -302,9 +311,6 @@ div #menu {
   left: 0;
   width: 100%;
 }
-div #menu div#nav {
-  padding: 0.8rem;
-}
 body {
   background-image: url("../assets/loginBackground.jpg");
   background-size: 100%;
@@ -319,7 +325,11 @@ body {
   align-items: center;
   justify-content: space-around;
 }
-.Register {
+.flexregister img {
+  max-width: 600px;
+  margin: 3rem;
+}
+#registerform {
   padding: 2rem;
   font-family: 'Merriweather', serif;
   background: white;

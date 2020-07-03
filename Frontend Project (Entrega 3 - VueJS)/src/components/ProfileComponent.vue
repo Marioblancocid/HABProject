@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="profile">
-      <img :src="profile.user_img ? profile.user_img : path">
+      <img :src="profile.user_img ? pathimg + profile.user_img : path">
       <p>{{ profile.email ? 'Email: ' + profile.email : null}}</p>
       <p>{{ profile.first_name ? 'Nombre: ' + profile.first_name : null}}</p>
       <p>{{ profile.second_name ? 'Apellido: ' + profile.second_name : null}}</p>
@@ -28,6 +28,7 @@ export default {
   data() {
     return {
       path: "http://localhost:3001/uploads/defaultimg.png",
+      pathimg: "http://localhost:3001/uploads/"
     };
   },
   props: {
@@ -55,7 +56,9 @@ export default {
 </script>
 
 <style scoped>
-
+.profile p {
+  text-align: left;
+}
 img {
   height: 400px;
   width: 400px;

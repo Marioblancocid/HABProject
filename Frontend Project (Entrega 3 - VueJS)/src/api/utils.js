@@ -134,6 +134,26 @@ export function addMeeting(photoFormData) {
   })
 }
 
+// FUNCIÓN DE EDITUSER
+export function editUser(photoFormData, id) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await axios({
+        url: `${ENDPOINT}/users/${id}`, // URL DE LA AUTENTICACIÓN
+        method: "PUT", // MÉTODO DE LA AUTENTICACIÓN
+        data: photoFormData,
+        headers: {
+          'Content-Type': 'multipart/form-data; boundary=${form._boundary}'
+        }
+      });
+      resolve()
+    } catch (err) {
+      console.log('Error en Registro: ', err);
+      reject(err)
+    }
+  })
+}
+
 // GUARDAR TOKEN EN LOCALSTORAGE
 export function setAuthToken(token){
   axios.defaults.headers.common["Authorization"] = token.token;

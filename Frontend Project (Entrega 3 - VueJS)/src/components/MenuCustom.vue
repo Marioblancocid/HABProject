@@ -8,6 +8,7 @@
       <router-link v-show="!Loged" id='link' :to="{ name: 'Login'}">Entrar</router-link> 
       <router-link v-show="!Loged" id='link' :to="{ name: 'Register'}">Registrate</router-link> 
       <router-link v-show="Loged" id='link' :to="{ name: 'AñadirMeeting'}">Añadir Evento</router-link> 
+      <span v-show="Loged"><router-link v-show="Loged" id='link' :to="{ name: 'Profile', params:{ id: this.userID }}">{{nombreUsuario}}</router-link></span>
       <button v-show="Loged" id='link' class="myButton" @click="logoutUser()">Salir</button>
     </div>
   </div>
@@ -24,7 +25,7 @@ export default {
       return
     },
     getUserName() {
-      this.nombreUsuario = localStorage.getItem("Usuario");
+      this.nombreUsuario = localStorage.getItem("name");
       if (localStorage.getItem("id")) {
         this.userID = localStorage.getItem("id");
       } else {
@@ -74,6 +75,13 @@ export default {
   border-radius: 20px;
   background: white;
   padding-right: 2rem;
+  margin: 0;
+}
+
+.MenuCustom span {
+  margin-left: 3rem;
+  color: white;
+  font-weight: bold;
 }
 
 </style>

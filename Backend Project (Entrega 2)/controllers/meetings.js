@@ -34,7 +34,7 @@ async function listEntries(req, res, next) {
         on l.id_languages = r.id
         WHERE d.hidden=false AND r.lang_name LIKE ? AND d.meeting_date>CURDATE() 
         ORDER BY d.meeting_date ASC
-        LIMIT 20`,
+        LIMIT 8`,
           [`%${search}%`]
         );
       } else if (filter === 'city') {
@@ -52,7 +52,7 @@ async function listEntries(req, res, next) {
         OR d.hidden=false AND d.adress LIKE ? AND d.meeting_date>CURDATE() 
         OR d.hidden=false AND d.province LIKE ? AND d.meeting_date>CURDATE() 
         ORDER BY d.meeting_date ASC
-        LIMIT 20`,
+        LIMIT 8`,
           [`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]
         );
       } else if (filter === 'level') {
@@ -67,7 +67,7 @@ async function listEntries(req, res, next) {
         on l.id_languages = r.id
         WHERE d.hidden=false AND d.lang_level LIKE ? AND d.meeting_date>CURDATE()
         ORDER BY d.meeting_date ASC
-        LIMIT 20`,
+        LIMIT 8`,
           [`%${search}%`]
         );
       } else if (filter === 'age') {
@@ -90,7 +90,7 @@ async function listEntries(req, res, next) {
         on l.id_languages = r.id
         WHERE d.hidden=false AND u.birth_date between ? and ?  AND d.meeting_date>CURDATE() 
         ORDER BY d.meeting_date ASC
-        LIMIT 20`, [min_date, max_date]
+        LIMIT 8`, [min_date, max_date]
         );
       } else if (filter === 'interests') {
         result = await connection.query(
@@ -106,7 +106,7 @@ async function listEntries(req, res, next) {
         on l.id_languages = r.id
         WHERE d.hidden=false AND u.interests LIKE ? AND d.meeting_date>CURDATE() 
         ORDER BY d.meeting_date ASC
-        LIMIT 20`,
+        LIMIT 8`,
           [`%${search}%`]
         );
       } else {
@@ -126,7 +126,7 @@ async function listEntries(req, res, next) {
         OR d.hidden=false AND d.city LIKE ?  AND d.meeting_date>CURDATE()
         OR d.hidden=false AND d.country LIKE ? AND d.meeting_date>CURDATE()
         ORDER BY d.meeting_date ASC
-        LIMIT 20`,
+        LIMIT 8`,
         [`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`]
       );
       }
@@ -142,7 +142,7 @@ async function listEntries(req, res, next) {
         on l.id_languages = r.id
         WHERE d.hidden=false AND d.meeting_date>CURDATE()
         ORDER BY d.meeting_date ASC
-        LIMIT 20`
+        LIMIT 8`
       );
     }
 
@@ -162,7 +162,7 @@ async function listEntries(req, res, next) {
 async function newEntry(req, res, next) {
   //Meterlos en la base de datos
   try {
-    console.log(req.body);
+    console.log(req.files, req.photo);
     await entrySchema.validateAsync(req.body);
     
     const { language, meeting_date, title, online_meeting, adress, city, province, country, min_users, max_users, sex, commentary, duration_minutes, lang_level } = req.body;

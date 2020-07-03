@@ -124,7 +124,7 @@ export default {
   margin-bottom: 1rem;
   color: #777984;
 }
-.Landing p {
+.Landing section p {
   text-align: left;
 }
 .Landing {

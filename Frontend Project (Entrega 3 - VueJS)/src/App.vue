@@ -20,7 +20,11 @@
 }
 
 #nav {
-  padding: 30px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end ;
+  padding-right: 2rem;
 }
 
 #nav a {

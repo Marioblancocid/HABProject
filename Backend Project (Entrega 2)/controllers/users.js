@@ -12,7 +12,7 @@ const {
 } = require('./validations');
 
 const {
-  processAndSavePhoto,
+  processAndSaveProfilePhoto,
   deletePhoto,
   randomString,
   sendEmail,
@@ -41,7 +41,7 @@ async function newUser(req, res, next) {
     const dbPassword = await bcrypt.hash(user_password, 10);
     const registrationCode = randomString(40);
 
-    const validationURL = `${process.env.PUBLIC_HOST}/users/validate?code=${registrationCode}`;
+    const validationURL = `http://${process.env.PUBLIC_FRONT}/#/login?code=${registrationCode}`;
 
     let role = 'user';
 
@@ -52,8 +52,8 @@ async function newUser(req, res, next) {
     try {
       await sendEmail({
         email: email,
-        title: 'Valida tu cuenta de usuario en la app de diario mysql',
-        content: `Para validar tu cuenta de usuario pega esta url en tu navegador: ${validationURL}`
+        title: 'Valida tu cuenta de usuario en Coffee & Talk',
+        content: `${validationURL}`
       });
     } catch (error) {
       console.error(error.response.body);
@@ -340,7 +340,7 @@ async function loginUser(req, res, next) {
 // PUT - /users/:id
 async function editUser(req, res, next) {
   let connection;
-
+  console.log(req.files);
   try {
     await editUserSchema.validateAsync(req.body);
 
@@ -370,9 +370,9 @@ async function editUser(req, res, next) {
     // Check if there is a uploaded user_img and process it
 
     let savedFileName;
-    if (req.files && req.files.user_img) {
+    if (req.files && req.files.photo) {
       try {
-        savedFileName = await processAndSavePhoto(req.files.user_img);
+        savedFileName = await processAndSaveProfilePhoto(req.files.photo);
 
         if (current && current[0] && current[0].user_img) {
           await deletePhoto(current[0].user_img);

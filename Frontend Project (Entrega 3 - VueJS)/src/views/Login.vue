@@ -13,9 +13,9 @@
     <h2 id="Login">
       Inicia sesión
     </h2>
-    <p v-show="required">{{errorMsg}}</p>
-    <input type="text" spellcheck="false" required placeholder="Introduce tu correo electrónico" v-model="usuario">
-    <input type="password" @keypress.enter="login()" required placeholder="Escribe tu contraseña" v-model="password">
+    <p id="errors" v-show="required">{{errorMsg}}</p>
+    <input type="text" spellcheck="false" required placeholder="Correo electrónico" v-model="usuario">
+    <input type="password" @keypress.enter="login()" required placeholder="Contraseña" v-model="password">
     <a href="#" @click='login()' class="cta">
   <span>LOG IN</span>
   <svg width="13px" height="10px" viewBox="0 0 13 10">
@@ -38,7 +38,8 @@
 import menucustom from '../components/MenuCustom'
 import FooterCustom from '../components/FooterCustom'
 import { loginUser } from '../api/utils'
-import 'boxicons'
+import axios from 'axios'
+import Swal from 'sweetalert2'
 
 export default {
   name: 'Login',
@@ -86,12 +87,42 @@ export default {
         return
       }
     },
+    checkValidation() {
+      if (this.$route.query.code) {
+        let self = this;
+        axios
+        .get("http://localhost:3001/users/validate?code=" + self.$route.query.code,
+        )
+        .then(function(response) {
+          Swal.fire({
+        icon: "success",
+        title: "Usuario Validado!",
+        text: "Ya puedes logearte con tu contraseña!",
+        confirmButtonText: "Ok",
+        });
+        })
+        .catch(function(error) {
+          if (error.response) {
+            alert(error.response.data.message);
+          }
+        });
+      }
+    }
+},
+created() {
+  this.checkValidation();
 }
 }
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;1,300&display=swap');
 
+#errors {
+  font-size: 1rem;
+  color: darkred;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
 :focus {
 outline:none;
 }
@@ -101,10 +132,7 @@ div #menu {
   top: 0;
   left: 0;
   width: 100%;
-}
-div #menu div#nav {
-  padding: 0.8rem;
-}
+} 
 
 div #footer {
   position: fixed;
@@ -146,7 +174,7 @@ div #footer {
 }
 .Login section input {
   margin: 0.5rem;
-  padding: 0.6rem 0rem 0.6rem 1.5rem;
+  padding: 0.6rem 0rem 0.6rem 1rem;
   min-width: 40%;
   border-radius: 20px;
 }
@@ -198,6 +226,7 @@ div #footer {
   transition: all 0.3s ease;
 }
 .cta span {
+  color: black;
   position: relative;
   font-size: 16px;
   line-height: 18px;

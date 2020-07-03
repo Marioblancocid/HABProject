@@ -44,25 +44,27 @@
         <option value="Senior">Nativo</option>
       </select>
       </div>
-      <button @click="getMeetings()">Buscar</button>
+      <button @click="searchNow()">Buscar</button>
       <button @click="clearInput()">Clean</button>
     </div>
 
     <!--  SIMBOLO DE CARGA  -->
-    <div v-show="loading" class="lds-roller">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-
+    <div id="spinner" v-show="loading">
+    <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    </div>  
     <!-- COMPONENTE MEETINGS -->
-    <meetinglist :meetings="meetings"></meetinglist>
-
+    <div v-show="normalState">
+    <h1 v-show="!loading">Proximos eventos:</h1>
+    </div>
+    <meetinglist v-show="!loading" :meetings="meetings"></meetinglist>
+    <div v-if="Anonymous">
+    <div div v-show="normalState">
+    <h1 v-show="!loading">Eventos cercanos:</h1>
+    <meetinglist v-show="!loading" :meetings="meetingsplace"></meetinglist>
+    <h1 v-show="!loading">Eventos en tu idioma:</h1>
+    <meetinglist v-show="!loading"  :meetings="meetingslanguage"></meetinglist>
+    </div>
+    </div>
     <!-- NO RESULTS -->
     <p v-show="noResults" style="color:red">No results</p>
   </div>
@@ -80,16 +82,72 @@ export default {
   data() {
     return {
       meetings: [],
+      meetingsplace: [],
+      meetingslanguage: [],
+      profile: {},
       loading: true,
       search: "",
       filter: "",
+      normalState: true,
       normalInput: true,
       ageInput: false,
       noResults: false,
-      levelInput: false
+      levelInput: false,
+      Anonymous: true
     };
   },
   methods: {
+    getProfile() {
+      if (localStorage.getItem('id')) {
+      let self = this;
+      axios
+        .get("http://localhost:3001/users/" + localStorage.getItem('id'))
+        .then(function(response) {
+            self.profile = response.data.data;
+            self.getMeetingsLang();
+        })
+        .catch(function(error) {
+          if (error.response) {
+            alert(error.response.data.message);
+          }
+        })
+        } else {
+        this.Anonymous = false;
+        return;
+        }
+    },
+    getMeetingsLang() {
+      let self = this;
+      axios
+        .get(
+          `http://localhost:3001/entries?search=${self.profile.main_language}&filter=lang`
+        )
+        .then(function(response) {
+            self.meetingslanguage = response.data.data;
+            self.getMeetingsPlace();
+        })
+        .catch(function(error) {
+          alert(error.response.data.message);
+        });
+    },
+      getMeetingsPlace() {
+      let self = this;
+      axios
+        .get(
+          `http://localhost:3001/entries?search=${self.profile.city}&filter=city`
+        )
+        .then(function(response) {
+            self.meetingsplace = response.data.data;
+        })
+        .catch(function(error) {
+          alert(error.response.data.message);
+        });
+    },
+    searchNow(){
+      this.normalState = false;
+      this.loading = true;
+      this.getMeetings();
+    },
     getMeetings() {
       let self = this;
       axios
@@ -101,19 +159,22 @@ export default {
           setTimeout(function() {
             self.loading = false;
             self.meetings = response.data.data;
-          }, 1000);
+            self.getProfile();
+          }, 1500);
         })
         .catch(function(error) {
           alert(error.response.data.message);
         });
     },
     clearInput() {
+      this.loading = true;
       (this.search = ""), (this.filter = "");
       this.getMeetings();
       this.normalInput= true;
       this.ageInput= false;
       this.noResults= false;
-      this.levelInput= false
+      this.levelInput= false;
+      this.normalState= true;
     }
   },
   watch: {
@@ -151,6 +212,13 @@ export default {
 </script>
 
 <style>
+.loadingroller {
+min-width: 100vw;
+min-height: 60vh;
+display: flex;
+align-items: center;
+justify-content: center;
+}
 :focus {
 outline:none;
 }
@@ -177,6 +245,13 @@ body {
   padding: 0.6rem 0rem 0.6rem 1.5rem;
   min-width: 40%;
   border-radius: 20px;
+}
+.home h1 {
+  background: white;
+  max-width: 30vw;
+  border-radius: 15px;
+  padding: 1rem;
+  margin-left: 2rem;
 }
 .home select {
   background: white;
@@ -205,83 +280,49 @@ body {
   justify-content: center;
   margin: 1rem;
 }
-.lds-roller {
-  display: inline-block;
+
+#spinner {
+  min-height: 40vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   position: relative;
-  width: 80px;
-  height: 80px;
 }
-.lds-roller div {
-  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  transform-origin: 40px 40px;
+.lds-ring {
+  width: 400px;
+  height: 200px;
+  border-radius: 100px;
+  background: #3F3D56;
+  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
 }
-.lds-roller div:after {
-  content: " ";
+.lds-ring div {
+  box-sizing: border-box;
   display: block;
   position: absolute;
-  width: 7px;
-  height: 7px;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 8px solid #fff;
   border-radius: 50%;
-  background: cadetblue;
-  margin: -4px 0 0 -4px;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #fff transparent transparent transparent;
 }
-.lds-roller div:nth-child(1) {
-  animation-delay: -0.036s;
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
 }
-.lds-roller div:nth-child(1):after {
-  top: 63px;
-  left: 63px;
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
 }
-.lds-roller div:nth-child(2) {
-  animation-delay: -0.072s;
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
 }
-.lds-roller div:nth-child(2):after {
-  top: 68px;
-  left: 56px;
-}
-.lds-roller div:nth-child(3) {
-  animation-delay: -0.108s;
-}
-.lds-roller div:nth-child(3):after {
-  top: 71px;
-  left: 48px;
-}
-.lds-roller div:nth-child(4) {
-  animation-delay: -0.144s;
-}
-.lds-roller div:nth-child(4):after {
-  top: 72px;
-  left: 40px;
-}
-.lds-roller div:nth-child(5) {
-  animation-delay: -0.18s;
-}
-.lds-roller div:nth-child(5):after {
-  top: 71px;
-  left: 32px;
-}
-.lds-roller div:nth-child(6) {
-  animation-delay: -0.216s;
-}
-.lds-roller div:nth-child(6):after {
-  top: 68px;
-  left: 24px;
-}
-.lds-roller div:nth-child(7) {
-  animation-delay: -0.252s;
-}
-.lds-roller div:nth-child(7):after {
-  top: 63px;
-  left: 17px;
-}
-.lds-roller div:nth-child(8) {
-  animation-delay: -0.288s;
-}
-.lds-roller div:nth-child(8):after {
-  top: 56px;
-  left: 12px;
-}
-@keyframes lds-roller {
+@keyframes lds-ring {
   0% {
     transform: rotate(0deg);
   }

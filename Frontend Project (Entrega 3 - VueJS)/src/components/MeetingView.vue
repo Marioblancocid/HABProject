@@ -194,6 +194,9 @@ export default {
       return param;
     },
     getPhoto() {
+      if (this.meeting.image) {
+        return (this.path + this.meeting.image)
+      }
     let lastNumber = this.meeting.id.toString().split('').pop();
       return `http://localhost:3001/imgbares/${lastNumber}.jpeg`
     },

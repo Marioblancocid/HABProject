@@ -73,19 +73,12 @@ Añade un nuevo evento
 
 <label for="langlevel">Nivel de la charla:</label>
 <select required name="langlevel"  placeholder="Introduce el nivel del idioma" v-model="langlevel">
-<option value="beginner">Beginner</option>
-<option value="intermediate">Intermediate</option>
-<option value="expert">Expert</option>
-<option value="senior">Senior</option>
+<option value="beginner">Principiante</option>
+<option value="intermediate">Intermedio</option>
+<option value="expert">Experto</option>
+<option value="senior">Nativo</option>
 </select>
 </section>
-
-<label for="minusers">Usuarios admitidos:</label>
-<select required name="minusers" placeholder="Usuarios minimos" v-model="sex">
-      <option value="Unrestricted">Todos</option>
-      <option value="Female">Solo mujeres</option>
-      <option value="Male">Solo hombres</option>
-</select>
 
 <select name="language" required placeholder="Introduce la lengua de la charla" v-model="meeting_language">
 <option v-for="lang in languages" :key="lang.lang_name" v-bind:value="lang.lang_name">
@@ -122,7 +115,6 @@ export default {
       meeting_language: '',
       file: '',
       titulo: '',
-      sex: '',
       online: '',
       adress: '',
       city: '',
@@ -194,11 +186,11 @@ export default {
           photoFormData.append("country", this.country);
           photoFormData.append("min_users", this.minusers);
           photoFormData.append("max_users", this.maxusers);
-          photoFormData.append("sex", this.sex);
+          photoFormData.append("sex", 'Unrestricted');
           photoFormData.append("commentary", this.commentary);
           photoFormData.append("duration_minutes", this.duracionminutos);
           photoFormData.append("lang_level", this.langlevel);
-          if (this.file.length) {
+          if (this.file.name) {
           photoFormData.append("photo", this.file);
           };
           await addMeeting(photoFormData);
