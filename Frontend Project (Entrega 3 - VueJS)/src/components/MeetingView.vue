@@ -2,8 +2,7 @@
   <div>
     <div class="meeting">
       <img id="meetimg" :src="meeting.id ? getPhoto() : null" alt="" />
-      <p><span>ID: </span>{{ meeting.id }}</p>
-      <p><span>Nombre del host: <router-link :to=" {name:'Profile', params:{id:meeting.id_user_host ? meeting.id_user_host : 0}} ">{{meeting.first_name + ' ' + meeting.second_name}}</router-link></span></p>
+      <p><span>Responsable de la charla: <router-link class="link" :to=" {name:'Profile', params:{id:meeting.id_user_host ? meeting.id_user_host : 0}} ">{{meeting.first_name + ' ' + meeting.second_name}}</router-link></span></p>
       <p><span>Titulo del evento: </span>{{ meeting.title }}</p>
       <p><span>Fecha: </span>{{ formatDate(meeting.meeting_date) }}</p>
       <p><span>Ciudad: </span>{{ meeting.city }}</p>
@@ -11,24 +10,24 @@
       <p><span>Descripción: </span>{{ meeting.commentary }}</p>
       <p><span>Dirección: </span>{{ meeting.adress }}</p>
       <p><span>Nivel de la charla: </span>{{ formatLevel(meeting.lang_level) }}</p>
-      <p><span>Score: </span>{{ Number(meeting.vote).toFixed([2]) }}</p>
+      <p><span>Puntuación: </span>{{ Number(meeting.vote).toFixed([2]) }}</p>
       <p><span>Gente apuntada:  </span>{{ peopleJoin.length }} </p>
       <p><span>Máximas personas permitidas:  </span>{{ meeting.max_users }} </p>
       <div v-for="comment in comments" :key="comment.id">
         <p>
-          <span>{{ comment.id }}:</span>
-          {{ comment.commentary }}, Score: {{ comment.stars }} ⭐
+          <span><router-link class="link" :to=" {name:'Profile', params:{id:comment.id ? comment.id : 0}} ">{{comment.first_name + ' ' + comment.second_name}}</router-link>:</span>
+          {{ comment.commentary }}. Puntuación: {{ comment.stars }} ⭐
         </p>
       </div>
       <br/>
-      <section v-show="getIds()" v-for="join in allPeopleJoins" :key=join.id_users>
-        <p>user: {{ join.first_name }} {{ join.second_name }}</p>
-        <p>Admitido: {{ join.user_admitted ? 'yes' : 'no' }}</p>
-        <p>{{ join.user_admitted ? null : join.join_message }}</p>
-        <button v-show="join.user_admitted===0" @click="letJoin(join.id_users, join.id_meetings)">Aceptar</button>
+      <section class="joins" v-show="getIds()" v-for="join in allPeopleJoins" :key=join.id_users>
+        <p><span>Asistente: </span> <router-link class="link" :to=" {name:'Profile', params:{id:join.id_users ? join.id_users : 0}} ">{{join.first_name + ' ' + join.second_name}}</router-link></p>
+        <p><span>Admitido: </span>{{ join.user_admitted ? 'Sí' : 'no' }}</p>
+        <p><span v-show="join.user_admitted===0">Mensaje: </span>{{ join.user_admitted ? null : join.join_message }}</p>
+        <button id="peticion" v-show="join.user_admitted===0" @click="letJoin(join.id_users, join.id_meetings)">Aceptar</button>
       </section>
-        <button v-show="getIds()" @click="openModal()">Editar</button>
-        <button v-show="getIds()" @click="eliminar()">Borrar</button>
+        <button id="editar" v-show="getIds()" @click="openModal()">Editar</button>
+        <button id="borrar" v-show="getIds()" @click="eliminar()">Borrar</button>
 
     <!-- MODAL PARA EDITAR -->
     <div class="modal" v-show="modal">
@@ -116,6 +115,7 @@
 <script>
 import axios from 'axios'
 import { getLang } from '../api/utils'
+import Swal from "sweetalert2"
 export default {
   name: "MeetingView",
   data() {
@@ -162,7 +162,13 @@ export default {
           }
         )
         .then(function(response) {
-          console.log(response);
+          Swal.fire(
+            'Has aceptado al usuario!',
+            'Recibirá un correo electronico con esta informacion',
+            'success'
+          ).then(() => {
+          location.reload();
+          });
         })
         .catch(function(error) {
           console.log(error);
@@ -294,7 +300,23 @@ export default {
         }
       },
     eliminar(){
-      axios
+      let self = this;
+      Swal.fire({
+        title: '¿Estas seguro de que quieres borrar este evento?',
+        text: "Despues de hacerlo no podras volver atrás!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, borra el evento!'
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire(
+            'Has borrado el evento!',
+            'Seras redirigido al Landing.',
+            'success'
+          );
+          axios
         .delete(
           "http://localhost:3001/entries/" + this.meeting.id
         )
@@ -307,6 +329,9 @@ export default {
             alert(error.response.data.message);
           }
         });
+          self.$router.push('/');
+        }
+      })
   },
   mounted() {
       this.setFechaMinimoYMaximo();
@@ -315,21 +340,131 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.joins {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-content: flex-start;
+  border: 1px black solid;
+  padding: 1rem;
+  max-width: 50%;
+  margin-bottom: 1rem;
+}
+:focus {
+outline:none;
+}
+button {
+  padding: 0.6rem 0rem 0.6rem 1.5rem;
+  border-radius: 20px;
+  background: white;
+  padding-right: 2rem;
+  margin-left: 1rem;
+}
+button#peticion{
+    padding: 0.6rem 0rem 0.6rem 1.5rem;
+  border-radius: 20px;
+  background: white;
+  padding-right: 2rem;
+  margin-left: 1rem;
+  background: green;
+  align-self: center;
+  margin-top: 0.5rem;
+}
+#editar {
+  background: rgb(255, 208, 0);
+}
+
+#borrar {
+  background: rgb(252, 17, 17);
+}
+a {
+  color: #3F3D56
+}
+
+a:visited {
+  color: #3F3D56
+}
+span {
+  font-weight: bold;
+}
 .meeting {
   margin: 0
 }
+.meeting p {
+  text-align: left;
+  margin: 0.5rem;
+  font-size: 1.3rem;
+}
 .meeting img#meetimg {
-max-width: 90%;
+max-width: 100%;
+border: 4px solid black;
+margin-bottom: 1rem;
+}
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
 }
 .modalBox {
-  max-width: 40%;
+  background: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border-radius: 40px;;
+  border: 1px solid #888;
+  width: 40%;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
 }
-.modalBox h3 {
-  margin: 0.5rem 0 1rem 0;
+
+.modalBox input {
+  font-family: 'Merriweather', serif;
+  margin: 0.5rem;
+  padding: 0.6rem 0rem 0.6rem 1.5rem;
+  max-width: 25%;
+  border-radius: 20px;
+  border: 1px solid #3F3D56;
 }
-.modalBox label {
+.modal h3 {
+  font-size: 2rem;
+  margin: 1rem;
+}
+.modalBox input#file {
+  border: none;
+  max-width: 50%;
+}
+.modalBox textarea {
+  min-width: 50%;
+  min-height: 6rem;
+  align-self: center;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+
+.modalBox select {
+  background: white;
+  margin: 0.5rem;
+  padding: 0.6rem 1rem 0.6rem 1rem;
+  min-width: 10%;
+  border-radius: 20px;
+}
+
+.modalBox button {
+  padding: 0.6rem 0rem 0.6rem 1.5rem;
+  border-radius: 20px;
+  background: #3F3D56;
+  color: white;
+  padding-right: 2rem;
   margin-left: 1rem;
+  max-width: 30%;
+  margin-top: 1rem;
 }
 .vote {
   display: flex;

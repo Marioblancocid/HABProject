@@ -14,8 +14,8 @@
       Inicia sesión
     </h2>
     <p id="errors" v-show="required">{{errorMsg}}</p>
-    <input type="text" spellcheck="false" required placeholder="Correo electrónico" v-model="usuario">
-    <input type="password" @keypress.enter="login()" required placeholder="Contraseña" v-model="password">
+    <input type="text" spellcheck="false" required placeholder="Introduce tu correo electrónico" v-model="usuario">
+    <input type="password" @keypress.enter="login()" required placeholder="Introduce tu contraseña" v-model="password">
     <a href="#" @click='login()' class="cta">
   <span>LOG IN</span>
   <svg width="13px" height="10px" viewBox="0 0 13 10">
@@ -114,7 +114,7 @@ created() {
 }
 }
 </script>
-<style>
+<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;1,300&display=swap');
 
 #errors {
@@ -145,22 +145,29 @@ div #footer {
 }
 .Login {
   font-family: 'Merriweather', serif;
-  background: white;
-  border: 2px solid white;
+  background-image: url("../assets/loginBackground.jpeg");
   min-width: 40vw;
-  min-height: 40vh;
+  min-height: 100vh;
   border-radius: 30px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.125);
 }
 .Login img {
   margin: 3rem 0rem;
-  max-height: 500px;
+  animation: fadein 1s;
+  max-height: 400px;
 }
 .Login section {
+  background: white;
+  animation: fadein 2s;
+  margin: 0.5rem;
+  padding: 2rem 4rem;
+  min-width: 20%;
+  border-radius: 20px;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.125);
   font-size: 2rem;
   display: flex;
   flex-direction: column;
@@ -170,12 +177,12 @@ div #footer {
 }
 .Login h2 {
   margin: 1.5rem;
-  font-size: 2.3rem;
+  font-size: 3rem;
 }
 .Login section input {
   margin: 0.5rem;
   padding: 0.6rem 0rem 0.6rem 1rem;
-  min-width: 40%;
+  min-width: 70%;
   border-radius: 20px;
 }
 
@@ -257,5 +264,12 @@ div #footer {
 .cta:active {
   transform: scale(0.96);
 }
-
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 </style>

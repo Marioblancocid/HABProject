@@ -287,7 +287,11 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;1,300&display=swap');
+:focus {
+outline:none;
+}
 .flexmeeting {
   display: flex;
   flex-direction: row;
@@ -295,17 +299,19 @@ export default {
   justify-content: space-around;
 }
 #meetingCard {
+  animation: fadein 2s;
   background: white;
-  max-width: 30%;
+  max-width: 50%;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.125);
   border-radius: 30px;
   margin: 2rem;
-  padding: 2rem;
+  padding: 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
+
 #menumeetingview {
   min-width: 100vw;
 }
@@ -326,6 +332,8 @@ export default {
   margin-left: 1rem;
 }
 .meetingview {
+    font-family: 'Merriweather', serif;
+  background-image: url("../assets/loginBackground.jpeg");
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -337,6 +345,7 @@ export default {
   color: rgb(138, 118, 118);
 }
 .meetingview img#undraw{
+  animation: fadein 1.5s;
   max-width: 900px;
   margin-top: 5rem;
 }
@@ -355,6 +364,7 @@ body {
   justify-content: center;
 }
 .modal {
+  animation: fadein 1s;
   position: fixed;
   top: 0;
   left: 0;
@@ -439,6 +449,7 @@ body {
 
 }
 .lds-ring div {
+  animation: fadein 0.5s;
   box-sizing: border-box;
   display: block;
   position: absolute;
@@ -465,6 +476,14 @@ body {
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 </style>

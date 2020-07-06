@@ -14,8 +14,12 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+
 .FooterCustom{
   background: rgb(43, 41, 41);
+  color: white;
+  padding: 1.8rem;
+  min-width: 100vw;
 }
 </style>

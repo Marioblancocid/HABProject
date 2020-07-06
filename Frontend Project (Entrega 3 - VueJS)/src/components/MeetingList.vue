@@ -4,11 +4,10 @@
       <a :href="path + meeting.id">
       <img :src="meeting.id ? getPhoto(meeting.id, meeting.image) : null" alt />
       <section>
-      <p><span>Título:</span> {{ formatTitle(meeting.title) }}</p>
-      <p><span>Fecha:</span> {{ formatDate(meeting.meeting_date) }}</p>
-      <p><span>Ciudad:</span> {{ meeting.city }}</p>
-      <p><span>Nivel:</span> {{ formatLevel(meeting.lang_level) }}</p>
-      <p><span>Idioma:</span> {{meeting.lang_name }}</p>
+      <p><span id="title">{{ meeting.title }}</span></p>
+      <p><span>{{ formatDate(meeting.meeting_date) }}</span></p>
+      <p id="secundary"><span >Ciudad: {{ meeting.city }}</span></p>
+      <p id="secundary"><span >Idioma: {{meeting.lang_name }}</span></p>
     </section>
     </a>
     </div>
@@ -63,19 +62,19 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 
 .meetinglist {
   font-family: 'Merriweather', serif;
   min-width: 40vw;
   min-height: 40vh;
   border-radius: 30px;
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.125);
   display: flex;
   flex-wrap: wrap;
   margin: 3rem;
   justify-content: space-around;
   padding: 0;
+  animation: fadein 2s;
 }
 .meetingCardList a {
   color: white;
@@ -86,25 +85,42 @@ export default {
   margin: auto;
   padding: 0 0 0 0.5rem;
   font-weight: 500;
+  font-size: 1.2rem;
   max-width: 100%;
-  background-color: rgba(0, 0, 0, 0.76);
+  background-color: #3F3D56;
   margin-bottom: .6rem;
 }
 .meetingCardList span {
   font-weight: bold;
 }
+#title {
+  font-size: 1.5rem;
+  text-align: left;
+}
+#secundary {
+  background: none;
+  text-align: right;
+  font-size: 1rem;
+  color: #3F3D56;
+}
+#secundary span {
+  background: white;
+  padding: 0rem 0.2rem;
+}
 .meetingCardList {
   width: 380px;
   height: 280px;
+  overflow: hidden;
   margin: 0.5rem;
   position: relative;
   color: white;
   font-weight: bold;
+  animation: fadein 2s;
+  border: 3px black solid;
 }
 .meetingCardList img {
-  max-width: 100%;
-  max-height: 100%;
-  border: 2px black solid;
+  max-width: 120%;
+  max-height: 120%;
 }
 
 .meetingCardList section {
@@ -114,5 +130,13 @@ export default {
   left: 50%;
 
   transform: translate(-50%, -50%);
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

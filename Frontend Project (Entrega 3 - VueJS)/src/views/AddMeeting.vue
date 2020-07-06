@@ -25,9 +25,10 @@ description="Página de registro de la aplicación."/>
 <h2 id="titulo">
 Añade un nuevo evento
 </h2>
-
+<p id="errormsg" v-if="required">{{errorMsg}}</p>
 <form>
 
+<p>Elije un título descriptivo, la fecha y el idioma del evento:</p>
 <section>
 <label for="titulo">Título:</label>
 <input required minlength="3" maxlength="100" type="text" placeholder="Introduce el título" v-model="titulo">
@@ -36,13 +37,22 @@ Añade un nuevo evento
 <select required name="online" placeholder="Online?" v-model="online">
       <option value="1">Si</option>
       <option value="0">No</option>
+ <option value="" selected disabled hidden>Elige...</option>
 </select>
 </section>
+
 <section>
 <label for="meeting-date">Fecha:</label>
 <input required type="datetime-local" id="meeting-time" name="meeting-time" value="2018-06-12T19:30" :min=fechaminimo :max=fechamaximo v-model="meeting_date">
+<select name="language" required placeholder="Introduce la lengua de la charla" v-model="meeting_language">
+<option v-for="lang in languages" :key="lang.lang_name" v-bind:value="lang.lang_name">
+{{lang.lang_name}}
+</option> 
+ <option value="" selected disabled hidden>Elige el idioma del evento</option>
+</select>
 </section>
 
+<p>Elije la dirección donde tendrá lugar el evento:</p>
 <section>
 <label for="adresses">Direccion:</label>
 <input required minlength="3" maxlength="100" type="text"  placeholder="Introduce tu direccion" v-model="adress">
@@ -52,24 +62,31 @@ Añade un nuevo evento
 <input required minlength="3" maxlength="100" type="text"  placeholder="Introduce tu provincia" v-model="province">
 <input required minlength="3" maxlength="100" type="text" placeholder="Introduce tu pais" v-model="country">
 </section>
+<p>¿Cuantos asistentes están admitidos? ¡Elije tambien el nivel de idioma del evento!</p>
+
 <section>
-<label for="minusers">Mínimos asistentes:</label>
+<label for="minusers">Asistentes mínimos:</label>
 <select required name="minusers" placeholder="Usuarios minimos" v-model="minusers">
       <option>2</option>
       <option>3</option>
       <option>4</option>
+ <option value="" selected disabled hidden>Asistentes mínimos</option>
 </select>
 
-<label for="minusers" v-show="minusers">Máximos asistentes:</label>
+<label for="minusers">Máximos:</label>
+<select required name="minusers" placeholder="Usuarios minimos" disabled  v-show="!minusers">
+ <option value="" selected disabled hidden>Elige primero el mínimo</option>
+</select>
 <select required name="maxusers"  placeholder="Usuarios maximos" v-model="maxusers" v-show="minusers">
       <option>{{parseInt(minusers) + 1}}</option>
       <option>{{parseInt(minusers) + 2}}</option>
       <option>{{parseInt(minusers) + 3}}</option>
+ <option value="" selected disabled hidden>Asistentes máximos</option>
 </select>
 </section>
 <section>
 <label for="">Duración (en minutos):</label>
-<input required type="number" name="duracionminutos" min="10" max="120" v-model="duracionminutos">
+<input required type="number" placeholder="Duración" name="duracionminutos" min="10" max="120" v-model="duracionminutos">
 
 <label for="langlevel">Nivel de la charla:</label>
 <select required name="langlevel"  placeholder="Introduce el nivel del idioma" v-model="langlevel">
@@ -77,14 +94,11 @@ Añade un nuevo evento
 <option value="intermediate">Intermedio</option>
 <option value="expert">Experto</option>
 <option value="senior">Nativo</option>
+ <option value="" selected disabled hidden>Elige el nivel</option>
 </select>
 </section>
 
-<select name="language" required placeholder="Introduce la lengua de la charla" v-model="meeting_language">
-<option v-for="lang in languages" :key="lang.lang_name" v-bind:value="lang.lang_name">
-{{lang.lang_name}}
-</option> 
-</select>
+<p>¡Finalmente añade una imagen descriptiva del evento o del lugar del evento y un comentario!</p>
 
 <section>
 <label for="imgmeeting">Sube una imagen:</label>
@@ -97,16 +111,18 @@ Añade un nuevo evento
 </button>
 </section>
 </section>
+<footercustom></footercustom>
 </div>
 </template>
 <script>
+import footercustom from '@/components/FooterCustom.vue'
 import MenuCustom from '@/components/MenuCustom'
 import { getLang, addMeeting } from '../api/utils'
 import Swal from 'sweetalert2'
 export default {
   name: 'AñadirMeeting',
   components: {
-    MenuCustom
+    MenuCustom, footercustom
   },
   data() {
     return {
@@ -129,7 +145,6 @@ export default {
       required: false,
       errorMsg: 'Error',
       languages: [],
-      required: true,
       fechamaximo: '',
       fechaminimo: ''
     }
@@ -234,15 +249,21 @@ export default {
   },
 }
 </script>
-<style>
+<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;1,300&display=swap');
 
+#errormsg {
+    color: red;
+  margin: 0;
+  font-size: 1.2rem;
+}
 .addmeetingsblock button {
   padding: 0.6rem 0rem 0.6rem 1.5rem;
   border-radius: 20px;
-  background: white;
+  background: #3F3D56;
   padding-right: 2rem;
   margin-top: 1rem;
+  color: white;
 }
 .addmeetingsblock input {
   font-family: 'Merriweather', serif;
@@ -266,10 +287,11 @@ export default {
   font-family: 'Merriweather', serif;
 }
 .addmeetingsblock {
+  animation: fadein 2s;
   font-family: 'Merriweather', serif;
   font-size: 0.8rem;
   background: white;
-  min-width: 30%;
+  min-width: 50%;
   min-height: 30vh;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.125);
   border-radius: 30px;
@@ -280,6 +302,15 @@ export default {
   align-items: center;
   justify-content: flex-start;
 }
+p {
+  text-align: left;
+  margin: 2rem 1rem 1rem 1rem;
+  font-size: 1.1rem;
+  color: #3F3D56;
+  font-weight: bold;
+  text-align: center;
+}
+
 .flexadd {
   display: flex;
   flex-direction: row;
@@ -289,6 +320,8 @@ export default {
   justify-content: space-around;
 }
 .AddMeeting {
+  font-family: 'Merriweather', serif;
+  background-image: url("../assets/loginBackground.jpeg");
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -296,7 +329,8 @@ export default {
   min-height: 100vh;
 }
 .AddMeeting img {
-  max-width: 800px;
+  animation: fadein 1.5s;
+  max-width: 600px;
 }
 .menuadd {
   min-width: 100vw;
@@ -304,5 +338,13 @@ export default {
 .AddMeeting h2 {
   margin: 1rem;
   font-size: 1.5rem;
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

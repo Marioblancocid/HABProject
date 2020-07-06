@@ -1,4 +1,5 @@
 <template>
+<div class="homebck">
   <div class="home">
     <vue-headful title="Coffee & Talk" description="Home page" />
 
@@ -47,26 +48,28 @@
       <button @click="searchNow()">Buscar</button>
       <button @click="clearInput()">Clean</button>
     </div>
+    <span id="noresults" v-show="noResults">No se han encontrado resultados con esos requisitos de búsqueda</span>
 
     <!--  SIMBOLO DE CARGA  -->
-    <div id="spinner" v-show="loading">
+    <div id="spinner" v-if="loading">
     <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
     </div>  
     <!-- COMPONENTE MEETINGS -->
-    <div v-show="normalState">
-    <h1 v-show="!loading">Proximos eventos:</h1>
+    <div v-if="normalState">
+    <h1 v-if="!loading">Proximos eventos:</h1>
     </div>
-    <meetinglist v-show="!loading" :meetings="meetings"></meetinglist>
+    <meetinglist v-if="!loading" id="main" :meetings="meetings"></meetinglist>
     <div v-if="Anonymous">
-    <div div v-show="normalState">
-    <h1 v-show="!loading">Eventos cercanos:</h1>
-    <meetinglist v-show="!loading" :meetings="meetingsplace"></meetinglist>
-    <h1 v-show="!loading">Eventos en tu idioma:</h1>
-    <meetinglist v-show="!loading"  :meetings="meetingslanguage"></meetinglist>
+    <div div v-if="normalState">
+    <h1 v-if="!loading">Eventos cercanos:</h1>
+    <meetinglist v-if="!loading" :meetings="meetingsplace"></meetinglist>
+    <h1 v-if="!loading">Eventos en tu idioma:</h1>
+    <meetinglist v-if="!loading"  :meetings="meetingslanguage"></meetinglist>
     </div>
     </div>
     <!-- NO RESULTS -->
-    <p v-show="noResults" style="color:red">No results</p>
+    </div>
+    <footercustom v-if="!loading"></footercustom>
   </div>
 </template>
 
@@ -74,11 +77,11 @@
 import axios from "axios";
 //IMPORTANDO MENU
 import menucustom from "@/components/MenuCustom.vue";
-//IMPORTANDO SPACES
 import meetinglist from "@/components/MeetingList.vue";
+import footercustom from '@/components/FooterCustom.vue'
 export default {
   name: "Home",
-  components: { menucustom, meetinglist },
+  components: { menucustom, meetinglist, footercustom },
   data() {
     return {
       meetings: [],
@@ -134,10 +137,11 @@ export default {
       let self = this;
       axios
         .get(
-          `http://localhost:3001/entries?search=${self.profile.city}&filter=city`
+          `http://localhost:3001/entries?search=${self.profile.city}`
         )
         .then(function(response) {
             self.meetingsplace = response.data.data;
+            console.log(self.meetingsplace);
         })
         .catch(function(error) {
           alert(error.response.data.message);
@@ -211,7 +215,16 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+
+#noresults {
+  font-weight: bold;
+  font-size: 2.5rem;
+  margin-top: 8rem;
+  color: white;
+  text-decoration: underline;
+  background: #3F3D56;
+}
 .loadingroller {
 min-width: 100vw;
 min-height: 60vh;
@@ -227,15 +240,18 @@ outline:none;
   padding: 1rem;
   border: 1px solid black;
 }
+.homebck {
+  background-image: url("../assets/loginBackground.jpeg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
 .home {
+  position: relative;
   min-width: 100vw;
   min-height: 100vh;
 }
 body {
-  background-image: url("../assets/loginBackground.jpg");
-  background-size: 100%;
-  background-repeat: round;
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -247,6 +263,7 @@ body {
   border-radius: 20px;
 }
 .home h1 {
+  animation: fadein 1.5s;
   background: white;
   max-width: 30vw;
   border-radius: 15px;
@@ -282,15 +299,16 @@ body {
 }
 
 #spinner {
-  min-height: 40vh;
+  min-height: 200vh;
   min-width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
 }
 .lds-ring {
+  animation: fadein 0.5s;
   width: 400px;
   height: 200px;
   border-radius: 100px;
@@ -330,4 +348,13 @@ body {
     transform: rotate(360deg);
   }
 }
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+</style>
 </style>

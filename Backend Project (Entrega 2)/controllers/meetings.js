@@ -762,10 +762,13 @@ async function getEntryVotes(req, res, next) {
 
     const [
       votes
-    ] = await connection.query('SELECT * from ratings WHERE id_meetings=?', [
+    ] = await connection.query(`SELECT d.*, b.*
+    from ratings d 
+    left join users b
+    on d.id = b.id
+    WHERE id_meetings=?`, [
       id
     ]);
-
     connection.release();
 
     res.send({

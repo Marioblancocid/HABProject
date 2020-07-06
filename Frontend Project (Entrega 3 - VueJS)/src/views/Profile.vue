@@ -1,9 +1,12 @@
 <template>
-  <div class="Perfil usuarios">
-    <vue-headful title="Profile" description="Profile page" />
+<div class="perfilCoffee">
 
-    <!-- MENU -->
-    <menucustom id="menuProfile"></menucustom>
+<!-- MENU -->
+<menucustom id="menuProfile"></menucustom>
+<vue-headful title="Profile" description="Profile page" />
+
+  <div class="Perfil">
+
 
 <!--  SIMBOLO DE CARGA  -->
     <div id="spinner" v-show="loading">
@@ -17,9 +20,9 @@
 
 <div>
   <section v-show="getIds()">
-        <button @click="openModal('edit')">Editar</button>
-        <button @click="openModal('pass')">Cambiar Contraseña</button>
-        <button @click="eliminar()">Borrar Perfil</button>
+        <button id="editar" @click="openModal('edit')">Editar</button>
+        <button id="editar" @click="openModal('pass')">Cambiar Contraseña</button>
+        <button id="borrar" @click="eliminar()">Borrar Perfil</button>
       </section>
 </div>
 </section>
@@ -93,7 +96,8 @@
   </div>
 
 
-
+</div>
+<footercustom v-show="!loading"></footercustom>
 </div>
 </template>
 
@@ -101,6 +105,8 @@
 import menucustom from "@/components/MenuCustom.vue"; 
 import { clearLogin, editUser } from '../api/utils'
 import ProfileComponent from "@/components/ProfileComponent.vue";
+import footercustom from '@/components/FooterCustom.vue'
+
 
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -108,7 +114,8 @@ export default {
   name: "Profile",
   components: {
     menucustom,
-    ProfileComponent
+    ProfileComponent,
+    footercustom
   },
   data() {
     return {
@@ -249,6 +256,7 @@ export default {
           icon: "success",
           title: "Has editado tu perfil!"
         });
+        self.closeModal();
         } catch (error) {
           alert(error.response.data.message);
         };
@@ -317,7 +325,9 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;1,300&display=swap');
+
 .flexprofile {
   display: flex;
   flex-direction: row;  
@@ -333,20 +343,26 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  animation: fadein 2s;
 }
 #menuProfile {
   min-width: 100vw;
 }
 .Perfil {
+  font-family: 'Merriweather', serif;
+  background-image: url("../assets/loginBackground.jpeg");
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   min-width: 100vw;
   min-height: 100vh;
 }
 .Perfil img {
-  border-radius: 50%;
+  max-width: 800px;
+  animation: fadein 1s;
 }
+
 .Perfil button {
   padding: 0.6rem 0rem 0.6rem 1.5rem;
   border-radius: 20px;
@@ -360,6 +376,7 @@ export default {
   text-align: center;
 }
 .modal {
+  animation: fadein 1s;
   position: fixed;
   top: 0;
   left: 0;
@@ -418,14 +435,16 @@ export default {
   margin-left: 1rem;
   max-width: 30%;
   margin-top: 0.5rem;
+  background: #3F3D56;
+  color: white;
 }
 #spinner {
-  min-height: 40vh;
+  min-height: 80vh;
   min-width: 100vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: relative;
 }
 .lds-ring {
@@ -437,9 +456,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: fadein .5s;
+
 
 }
 .lds-ring div {
+  animation: fadein 0.5s;
   box-sizing: border-box;
   display: block;
   position: absolute;
@@ -466,6 +488,22 @@ export default {
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+#editar {
+  background: rgb(255, 208, 0);
+}
+
+#borrar {
+  background: rgb(252, 17, 17);
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 </style>

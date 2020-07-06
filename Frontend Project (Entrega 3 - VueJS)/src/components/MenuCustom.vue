@@ -8,6 +8,7 @@
       <router-link v-show="!Loged" id='link' :to="{ name: 'Login'}">Entrar</router-link> 
       <router-link v-show="!Loged" id='link' :to="{ name: 'Register'}">Registrate</router-link> 
       <router-link v-show="Loged" id='link' :to="{ name: 'AñadirMeeting'}">Añadir Evento</router-link> 
+      <router-link v-show="Loged" id='link' :to="{ name: 'About'}">About</router-link> 
       <span v-show="Loged"><router-link v-show="Loged" id='link' :to="{ name: 'Profile', params:{ id: this.userID }}">{{nombreUsuario}}</router-link></span>
       <button v-show="Loged" id='link' class="myButton" @click="logoutUser()">Salir</button>
     </div>
@@ -52,7 +53,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
 #logo {
   max-width: 100px;
   max-height: 100px;

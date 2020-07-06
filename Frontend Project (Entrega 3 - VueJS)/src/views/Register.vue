@@ -14,30 +14,23 @@
     <img src="../assets/Register.svg" alt="Register image">  
     <form id="registerform">
     <h2 id="titulo">
-      Empieza ya a aprender idiomas 
+      ¡Empieza ya a aprender idiomas!
     </h2>
-    <p v-show="required">{{errorMsg}}</p>
+    <p id="error" v-show="required">{{errorMsg}}</p>
     
+    <section>
+      <p>
+        Introduce tus datos de Login y guardalos para el futuro! Te servirán para entrar en tu Coffee&Talk!
+      </p>
+    </section>
+
     <section class="flexsection">
-    
+
     <section>
     <label for="email">Email:</label>
     <input minlength="3" maxlength="100" required type="email" placeholder="Introduce tu email" v-model="email">
     </section>
     
-    <section>
-    <label for="language">Idioma Principal:</label>
-    <select name="language" required placeholder="Introduce tu lenguaje nativo" v-model="main_language">
-    <option v-for="lang in languages" :key="lang.lang_name" v-bind:value="lang.lang_name">
-      {{lang.lang_name}}
-      </option> 
-    </select>
-    </section>
-
-    </section>
-    
-    <section class="flexsection">
-
     <section>
     <label for="password">Contraseña:</label>
     <input name="password" required type="password" minlength="6" maxlength="100" placeholder="Introduce tu contraseña" v-model="user_password">
@@ -47,6 +40,13 @@
     <input name="password2" required type="password" minlength="6" maxlength="100" placeholder="Repite tu contraseña" v-model="user_password2">
     </section>
 
+    </section>
+  
+
+    <section>
+      <p>
+        Ahora cuentanos un poco sobre ti! Nos servirá para encontrar gente similar con quién practicar idiomas!
+      </p>
     </section>
 
     <section class="flexsection">
@@ -59,10 +59,17 @@
     <label for="">Apellidos:</label>
     <input minlength="3" maxlength="100" required type="text" placeholder="Introduce tu apellido" v-model="second_name">
     </section>
-
+    <section>
+    <select name="language" required placeholder="Introduce tu lenguaje nativo" v-model="main_language">
+    <option v-for="lang in languages" :key="lang.lang_name" v-bind:value="lang.lang_name">
+      {{lang.lang_name}}
+      </option> 
+      <option value="" selected disabled hidden>Elige tu idioma principal</option>
+    </select>
+    </section>
     </section>
 
-    <section class="flexsection">
+    <section class="flexsection3">
 
     <section>
     <label for="">Fecha:</label>
@@ -70,7 +77,8 @@
     </section>
     <section>
     <label required for="">Sexo:</label>
-    <select name="sexo" required placeholder="Introduce tu sexo" v-model="sex">
+    <select name="sexo" required v-model="sex">
+      <option value="" selected disabled hidden>Elige tu sexo</option>
       <option value="Male">Hombre</option>
       <option value="Female">Mujer</option>
       <option value="Other">Otro</option>
@@ -83,6 +91,12 @@
 
     </section>
     
+
+
+
+          <p>
+        ¿Donde vives? ¿Que hobbies tienes? ¿Te ha recomendado alguien? ¡Esto nos ayudará a encontrar a gente como tú!
+      </p>
     <section class="flexsection">
 
     <section>
@@ -90,20 +104,13 @@
     <input minlength="3" maxlength="100" required type="text"  placeholder="Introduce tu direccion" v-model="adress">
     </section>
     <section>
-    <label for="">Ciudad:</label>
     <input minlength="3" maxlength="100" required type="text"  placeholder="Introduce tu ciudad" v-model="city">
     </section>
-    
-    </section>
-
-    <section class="flexsection">
 
     <section>
-    <label for="">Provincia:</label>
     <input minlength="3" maxlength="100" required type="text"  placeholder="Introduce tu provincia" v-model="province">
     </section>
     <section>
-    <label for="">País:</label>
     <input minlength="3" maxlength="100" required type="text" placeholder="Introduce tu pais" v-model="country">
     </section>
 
@@ -115,17 +122,17 @@
     <label for="">Intereses:</label>
     <input minlength="3" maxlength="100" required c type="text"  placeholder="Introduce tus intereses" v-model="interests">
     </section>
+        <section>
+    <label for="">Comentario:</label>
+    <input minlength="3" maxlength="100" required type="text" placeholder="Introduce un comentario" v-model="user_status">
+    </section>
     <section>
     <label for="">Código de amigo:</label>
     <input type="text" placeholder="Recomendaciones" v-model="admin_code">
     </section>
 
     </section>
-    
-    <section>
-    <label for="">Comentario:</label>
-    <input minlength="3" maxlength="100" required type="text" placeholder="Introduce un comentario" v-model="user_status">
-    </section>
+  
 
 <a href="#" @click='addUser()' class="cta">
   <span id="regispan">Register</span>
@@ -281,7 +288,7 @@ export default {
     }
     }
 </script>
-<style> 
+<style scoped> 
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;1,300&display=swap');
 
 .flexregister {
@@ -294,6 +301,7 @@ outline:none;
 }
 #titulo {
   margin-bottom: 2rem;
+  font-size: 3rem;
 }
 div #footer {
   position: fixed;
@@ -311,8 +319,13 @@ div #menu {
   left: 0;
   width: 100%;
 }
-body {
-  background-image: url("../assets/loginBackground.jpg");
+#error {
+  color: red;
+  margin: 0;
+  font-size: 1.2rem;
+}
+.Register {
+  background-image: url("../assets/loginBackground.jpeg");
   background-size: 100%;
   background-repeat: round;
   min-height: 100vh;
@@ -327,13 +340,16 @@ body {
 }
 .flexregister img {
   max-width: 600px;
+  animation: fadein 1s;
   margin: 3rem;
 }
 #registerform {
+  animation: fadein 2s;
   padding: 2rem;
   font-family: 'Merriweather', serif;
   background: white;
   border: 2px solid white;
+  margin-top: 1rem;
   min-width: 40vw;
   min-height: 40vh;
   border-radius: 30px;
@@ -343,7 +359,17 @@ body {
   justify-content: space-around;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.125);
 }
-
+.flexsection3{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.flexsection section {
+  margin: 0.5rem;
+}
+.flexsection3 label {
+  margin-left: 2.5rem;
+}
 .Register select {
   background: white;
   margin: 0.5rem;
@@ -356,6 +382,13 @@ body {
   padding: 0.6rem 0rem 0.6rem 1.5rem;
   min-width: 40%;
   border-radius: 20px;
+}
+.Register p {
+  text-align: left;
+  margin: 2rem 1rem 1rem 1rem;
+  font-size: 1.1rem;
+  color: #3F3D56;
+  font-weight: bold;
 }
 /* CSS DEL BOTON */
 
@@ -418,5 +451,13 @@ a {
 
 #regispan {
   color: black;
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

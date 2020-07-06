@@ -37,7 +37,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;1,300&display=swap');
 
 .Landing a {
@@ -98,11 +98,12 @@ export default {
   transform: scale(0.96);
 }
 .flexlanding {
+  animation: fadein 2s;
+  background: white;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  background: white;
   max-width: 60%;
   min-height: 30vh;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.125);
@@ -128,6 +129,7 @@ export default {
   text-align: left;
 }
 .Landing {
+  background-image: url("../assets/loginBackground.jpeg");
   font-family: 'Merriweather', serif;
   display: flex;
   flex-direction: column;
@@ -143,5 +145,13 @@ position: fixed;
   color: white;
   padding: 1.5rem;
   font-size: 300;
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>

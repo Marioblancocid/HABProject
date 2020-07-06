@@ -16,36 +16,34 @@
 </section>
 <section v-show="!loading" class="mymeetingsblock">
   <section class="mymeetingsblock2">
-  <h1>Eventos a los que asistiré:</h1>
+  <h1 id="eventtitle">Eventos a los que asistiré:</h1>
   <div class="meetingblocklist">
-    <h2>{{ meetings[0] ? null : 'Todavía no tienes ninguna' }}</h2>
+    <h2>{{ meetings[0] ? null : 'Todavía no tienes ninguno' }}</h2>
   <div class="blockmeeting" v-for="meeting in meetings" :key="meeting.id">
     <a :href="path + meeting.id">
       <img :src="meeting.id ? getPhoto(meeting.id) : null" alt />
       <section>
-      <p><span>Título:</span> {{ formatTitle(meeting.title) }} <router-link v-show="meeting.title.length" :to=" {name:'meeting', params:{id:meeting.id}} ">...ver más</router-link></p>
-      <p><span>Fecha:</span> {{ formatDate(meeting.meeting_date) }}</p>
-      <p><span>Ciudad:</span> {{ meeting.city }}</p>
-      <p><span>Nivel:</span> {{ formatLevel(meeting.lang_level) }}</p>
-      <p><span>Idioma:</span> {{meeting.lang_name ? meeting.lang_name : 'English' }}</p>
+      <p id="titulo">{{ formatTitle(meeting.title) }}</p>
+      <p>{{ formatDate(meeting.meeting_date) }}</p>
+      <p id="secundary"><span>Ciudad:{{ meeting.city }}</span> </p>
+      <p id="secundary"><span>Idioma: {{meeting.lang_name ? meeting.lang_name : 'English' }}</span> </p>
     </section>
     </a>
       </div>
       </div>
   </section>
   <section class="mymeetingsblock2">
-  <h1>Mis eventos organizados:</h1>
+  <h1 id="eventtitle">Mis eventos organizados:</h1>
   <div class="meetingblocklist">
-    <h2>{{ meetingsHosted[0] ? null : 'Todavía no tienes ninguna' }}</h2>
+    <h2>{{ meetingsHosted[0] ? null : 'Todavía no tienes ninguno' }}</h2>
   <div class="blockmeeting" v-for="meeting in meetingsHosted" :key="meeting.id">
     <a :href="path + meeting.id">
       <img :src="meeting.id ? getPhoto(meeting.id) : null" alt />
       <section>
-      <p><span>Título:</span> {{ formatTitle(meeting.title) }} <router-link v-show="meeting.title.length" :to=" {name:'meeting', params:{id:meeting.id}} ">...ver más</router-link></p>
-      <p><span>Fecha:</span> {{ formatDate(meeting.meeting_date) }}</p>
-      <p><span>Ciudad:</span> {{ meeting.city }}</p>
-      <p><span>Nivel:</span> {{ formatLevel(meeting.lang_level) }}</p>
-      <p><span>Idioma:</span> {{meeting.lang_name ? meeting.lang_name : 'English' }}</p>
+      <p id="titulo">{{ formatTitle(meeting.title) }}</p>
+      <p>{{ formatDate(meeting.meeting_date) }}</p>
+      <p id="secundary"><span >Ciudad: {{ meeting.city }}</span></p>
+      <p id="secundary"><span>Idioma: {{meeting.lang_name ? meeting.lang_name : 'English' }}</span></p>
     </section>
     </a>
     </div>
@@ -53,6 +51,7 @@
   </section>
 </section>
 </section>
+<footercustom v-show="!loading"></footercustom>
   </div>
 </template>
 
@@ -61,9 +60,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 //IMPORTANDO MENU
 import menucustom from "@/components/MenuCustom.vue";
+import footercustom from '@/components/FooterCustom.vue'
 export default {
   name: "MyMeetings",
-  components: { menucustom },
+  components: { menucustom, footercustom },
   data() {
     return {
       path: "http://localhost:8080/#/meeting/",
@@ -150,8 +150,11 @@ created() {
 }
 </script>
 
-<style>
+<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;1,300&display=swap');
+#eventtitle {
+  font-size: 3rem;
+}
 .blockmeeting section {
   min-width: 100%;
   position: absolute;
@@ -165,7 +168,8 @@ created() {
   border: 2px black solid;
 }
 .blockmeeting {
-  height: 200px;
+  height: 300px;
+  padding: 1rem;
   width: auto;
   margin: 0.334rem;
   position: relative;
@@ -183,23 +187,43 @@ created() {
 .meetingblocklist p {
   margin: auto;
   padding: 0 0 0 0.5rem;
-  font-size: 0.8rem;
   font-weight: 500;
+  font-size: 1.2rem;
   max-width: 90%;
-  background-color: rgba(0, 0, 0, 0.76);
+  background-color: #3F3D56;
   margin-bottom: .6rem;
+}
+span {
+  font-weight: bold;
+}
+#titulo {
+  font-size: 1.5rem;
+}
+#secundary {
+  background: none;
+  text-align: right;
+  font-size: 1rem;
+  color: #3F3D56;
+}
+#secundary span {
+  background: white;
+  padding: 0rem 0.2rem;
 }
 .meetingblocklist {
   font-family: 'Merriweather', serif;
-  min-width: 40vw;
-  min-height: 30vh;
+  min-width: 40%;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   padding: 0;
 }
 .mymeetings {
+  font-family: 'Merriweather', serif;
+  background-image: url("../assets/loginBackground.jpeg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -210,17 +234,19 @@ created() {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   min-height: 80vh;
   min-width: 100vw;
 }
 .flexmeetings img#clock {
-  max-width: 800px;
+  max-width: 500px;
   margin-left: 10rem;
+  animation: fadein 1s;
 }
 .mymeetingsblock2 {
-background: white;
-  max-width: 60%;
+  animation: fadein 2s;
+  background: white;
+  max-width: 50vw;
   min-height: 30vh;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.125);
   border-radius: 30px;
@@ -292,6 +318,7 @@ background: white;
 
 }
 .lds-ring div {
+  animation: fadein 0.5s;
   box-sizing: border-box;
   display: block;
   position: absolute;
@@ -318,6 +345,14 @@ background: white;
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 </style>
