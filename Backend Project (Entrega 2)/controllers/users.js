@@ -45,6 +45,7 @@ async function newUser(req, res, next) {
 
     let role = 'user';
 
+    console.log(admin_code, process.env.ADMIN_INVITATION_CODE);
     if (admin_code === process.env.ADMIN_INVITATION_CODE) {
       role = 'admin';
     }
@@ -225,7 +226,7 @@ async function getUser(req, res, next) {
     const [result] = await connection.query(
       `
       SELECT * 
-      FROM users WHERE id=?  
+      FROM users WHERE id=? and hidden=0 
     `,
       [id]
     );
@@ -256,11 +257,10 @@ async function getUser(req, res, next) {
       main_language: main_lang[0].lang_name,
       birth_date: userData.birth_date,
       second_name: userData.second_name,
-      id : userData.id
-
+      id : userData.id,
+      email : userData.email
     };
     if (userData.id === req.auth.id || req.auth.role === 'admin') {
-      payload.email = userData.email;
       payload.role = userData.role;
       payload.adress = userData.adress;
       payload.city = userData.city;
@@ -328,7 +328,8 @@ async function loginUser(req, res, next) {
       message: 'Login correcto',
       data: { 
         token: token,
-        id: user.id }
+        id: user.id,
+        role: user.role }
     });
   } catch (error) {
     next(error);
@@ -340,7 +341,6 @@ async function loginUser(req, res, next) {
 // PUT - /users/:id
 async function editUser(req, res, next) {
   let connection;
-  console.log(req.files);
   try {
     await editUserSchema.validateAsync(req.body);
 
@@ -488,13 +488,13 @@ async function deleteUser(req, res, next) {
       error.httpCode = 500;
       throw error;
     }
-    const [[email]] = await connection.query('SELECT email from users WHERE id=?', [req.auth.id]);
+    const [[email]] = await connection.query('SELECT email from users WHERE id=?', [id]);
 
     const formatedMail = 'DELETED: ' + email.email;
 
-    await connection.query('UPDATE users SET hidden=1, email=? WHERE id=?', [formatedMail, req.auth.id]);
-    await connection.query('UPDATE meetings SET hidden=1 where id_user_host=?', [req.auth.id]);
-    await connection.query('DELETE FROM users_meetings WHERE id_users=?', [req.auth.id]);
+    await connection.query('UPDATE users SET hidden=1, email=? WHERE id=?', [formatedMail, id]);
+    await connection.query('UPDATE meetings SET hidden=1 where id_user_host=?', [id]);
+    await connection.query('DELETE FROM users_meetings WHERE id_users=?', [id]);
 
     connection.release();
 

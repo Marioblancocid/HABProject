@@ -179,7 +179,9 @@ export default {
             'success'
           )
           this.deleteUser();
-          clearLogin();
+          if (localStorage.getItem('role')!=='admin') {
+            clearLogin();
+          };
           this.$router.push('/');
         }
       })
@@ -217,7 +219,6 @@ export default {
           }
         )
         .then(function(response) {
-          console.log(response);
           Swal.fire(
             'Has cambiado tu contraseña!',
             'Seras redirigido al Login.',
@@ -255,7 +256,7 @@ export default {
           Swal.fire({
           icon: "success",
           title: "Has editado tu perfil!"
-        });
+        }).then(()=>{location.reload()});
         self.closeModal();
         } catch (error) {
           alert(error.response.data.message);
@@ -266,6 +267,9 @@ export default {
       this.modalPass = false;
     },
     getIds(){
+      if (localStorage.getItem('role')==='admin') {
+        return true
+      };  
       if (this.profile.id) {
       this.id = this.profile.id;
       this.id_viewer = localStorage.getItem('id');
@@ -274,8 +278,8 @@ export default {
       } else {
         return false
       }
-      }
-    },
+    }
+  },
     saveDataToModal() {
       this.first_name = this.profile.first_name
       this.second_name = this.profile.second_name
@@ -346,7 +350,7 @@ export default {
   animation: fadein 2s;
 }
 #menuProfile {
-  min-width: 100vw;
+  min-width: 100%;
 }
 .Perfil {
   font-family: 'Merriweather', serif;
@@ -355,7 +359,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 100vw;
+  min-width: 100%;
   min-height: 100vh;
 }
 .Perfil img {
@@ -383,6 +387,9 @@ export default {
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
   width: 100%;
+}
+.perfilCoffee {
+  max-width: 100%;
 }
 .modalBox {
   background: #fefefe;

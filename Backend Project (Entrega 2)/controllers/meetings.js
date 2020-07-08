@@ -569,7 +569,7 @@ async function editEntry(req, res, next) {
           savedFileName = current.image;
         }
         let last_modification = formatDateToDB(new Date());
-        await connection.query('UPDATE meetings SET image=?, meeting_date=?, title=?, online_meeting=?, adress=?, city=?, province=?, country=?, min_users=?, max_users=?, sex=?, commentary=?, duration_minutes=?, lang_level=?, id_user_host=?, last_modification=? WHERE id=?',
+        await connection.query('UPDATE meetings SET image=?, meeting_date=?, title=?, online_meeting=?, adress=?, city=?, province=?, country=?, min_users=?, max_users=?, sex=?, commentary=?, duration_minutes=?, lang_level=?, last_modification=? WHERE id=?',
           [savedFileName, meeting_date, 
             title,
         online_meeting,
@@ -583,7 +583,6 @@ async function editEntry(req, res, next) {
         commentary,
         duration_minutes,
         lang_level,
-        req.auth.id,
         last_modification,
             id
           ]

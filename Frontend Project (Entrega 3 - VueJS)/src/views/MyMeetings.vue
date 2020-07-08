@@ -1,4 +1,5 @@
 <template>
+<div>
   <div class="mymeetings">
     <vue-headful title="MyMeeting" description="MyMeeting page" />
 
@@ -21,9 +22,9 @@
     <h2>{{ meetings[0] ? null : 'Todavía no tienes ninguno' }}</h2>
   <div class="blockmeeting" v-for="meeting in meetings" :key="meeting.id">
     <a :href="path + meeting.id">
-      <img :src="meeting.id ? getPhoto(meeting.id) : null" alt />
+      <img :src="meeting.id ? getPhoto(meeting.id, meeting.image) : null" alt />
       <section>
-      <p id="titulo">{{ formatTitle(meeting.title) }}</p>
+      <p id="titulo">{{ meeting.title }}</p>
       <p>{{ formatDate(meeting.meeting_date) }}</p>
       <p id="secundary"><span>Ciudad:{{ meeting.city }}</span> </p>
       <p id="secundary"><span>Idioma: {{meeting.lang_name ? meeting.lang_name : 'English' }}</span> </p>
@@ -38,9 +39,9 @@
     <h2>{{ meetingsHosted[0] ? null : 'Todavía no tienes ninguno' }}</h2>
   <div class="blockmeeting" v-for="meeting in meetingsHosted" :key="meeting.id">
     <a :href="path + meeting.id">
-      <img :src="meeting.id ? getPhoto(meeting.id) : null" alt />
+      <img :src="meeting.id ? getPhoto(meeting.id, meeting.image) : null" alt />
       <section>
-      <p id="titulo">{{ formatTitle(meeting.title) }}</p>
+      <p id="titulo">{{ meeting.title }}</p>
       <p>{{ formatDate(meeting.meeting_date) }}</p>
       <p id="secundary"><span >Ciudad: {{ meeting.city }}</span></p>
       <p id="secundary"><span>Idioma: {{meeting.lang_name ? meeting.lang_name : 'English' }}</span></p>
@@ -51,6 +52,7 @@
   </section>
 </section>
 </section>
+</div>
 <footercustom v-show="!loading"></footercustom>
   </div>
 </template>
@@ -67,6 +69,7 @@ export default {
   data() {
     return {
       path: "http://localhost:8080/#/meeting/",
+      pathimg: "http://localhost:3001/uploads/",
       loading: true,
       id: '',
       meetings: [],
@@ -74,7 +77,10 @@ export default {
     };
   },
   methods: {
-    getPhoto(id) {
+    getPhoto(id, image) {
+      if (image) {
+        return (this.pathimg + image)
+      }
     let lastNumber = id.toString().split('').pop();
     return `http://localhost:3001/imgbares/${lastNumber}.jpeg`
     },
@@ -163,18 +169,19 @@ created() {
   transform: translate(-50%, -50%);
 }
 .blockmeeting img {
-  max-width: 100%;
-  max-height: 100%;
-  border: 2px black solid;
+  max-width: 120%;
+  max-height: 120%;
 }
 .blockmeeting {
-  height: 300px;
-  padding: 1rem;
-  width: auto;
-  margin: 0.334rem;
+  width: 380px;
+  height: 280px;
+  overflow: hidden;
+  margin: 0.5rem;
   position: relative;
   color: white;
   font-weight: bold;
+  animation: fadein 2s;
+  border: 3px black solid;
 }
 .meetingblocklist span {
   font-weight: bold;
@@ -227,7 +234,7 @@ span {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 100vw;
+  min-width: 100%;
   min-height: 100vh;
 }
 .flexmeetings {
@@ -236,7 +243,7 @@ span {
   align-items: center;
   justify-content: space-around;
   min-height: 80vh;
-  min-width: 100vw;
+  min-width: 100%;
 }
 .flexmeetings img#clock {
   max-width: 500px;
@@ -258,7 +265,7 @@ span {
   justify-content: center;
 }
 #menuMeetings {
-  min-width: 100vw;
+  min-width: 100%;
 }
 .mymeetingsblock2 h1 {
   font-size: 2rem;

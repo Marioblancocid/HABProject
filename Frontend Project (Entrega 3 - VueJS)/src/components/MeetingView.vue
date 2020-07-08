@@ -207,6 +207,9 @@ export default {
       return `http://localhost:3001/imgbares/${lastNumber}.jpeg`
     },
     getIds(){
+      if (localStorage.getItem('role')==='admin') {
+        return true
+      };  
       if (this.meeting.id_user_host) {
       this.id_host = this.meeting.id_user_host;
       this.id_viewer = localStorage.getItem('id');
@@ -321,15 +324,14 @@ export default {
           "http://localhost:3001/entries/" + this.meeting.id
         )
         .then(function(response) {
-          console.log(response);
-          location.reload();
+          self.$router.push('/home')
         })
         .catch(function(error) {
           if (error.response) {
             alert(error.response.data.message);
           }
         });
-          self.$router.push('/');
+          self.$router.push('/home');
         }
       })
   },
@@ -359,7 +361,8 @@ button {
   border-radius: 20px;
   background: white;
   padding-right: 2rem;
-  margin-left: 1rem;
+  margin: 0 0 1rem 1rem;
+
 }
 button#peticion{
     padding: 0.6rem 0rem 0.6rem 1.5rem;

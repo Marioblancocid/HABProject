@@ -292,6 +292,7 @@ export default {
 :focus {
 outline:none;
 }
+
 .flexmeeting {
   display: flex;
   flex-direction: row;
@@ -327,9 +328,14 @@ outline:none;
 .meetingview button {
   padding: 0.6rem 0rem 0.6rem 1.5rem;
   border-radius: 20px;
-  background: white;
+  background: #3F3D56;
+  color: white;
   padding-right: 2rem;
   margin-left: 1rem;
+}
+.meetingview button:disabled {
+  background: rgb(109, 107, 126);
+
 }
 .meetingview {
     font-family: 'Merriweather', serif;
@@ -415,7 +421,8 @@ body {
 .modalBox button {
   padding: 0.6rem 0rem 0.6rem 1.5rem;
   border-radius: 20px;
-  background: white;
+  background: #3F3D56;
+  color: white;
   padding-right: 2rem;
   margin-left: 1rem;
   max-width: 30%;

@@ -20,6 +20,6 @@ export default {
   background: rgb(43, 41, 41);
   color: white;
   padding: 1.8rem;
-  min-width: 100vw;
+  min-width: 100%;
 }
 </style>

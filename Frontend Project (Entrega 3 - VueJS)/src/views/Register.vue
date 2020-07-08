@@ -241,11 +241,14 @@ export default {
         this.validatingData();
         if (this.correctData) {
         try {
+          if (!this.admin_code.length) {
+            this.admin_code = '      '
+          }
           await this.isNewUser();
           if (this.existingUser === true) {
             this.showError('Este correo ya existe en la base de datos');
           } else {
-          await registerUser(this.email, this.user_password, this.main_language, this.first_name, this.second_name, this.birth_date, this.adress, this.city, this.province, this.country, this.sex, this.tel, this.user_status, this.interests);
+          await registerUser(this.email, this.user_password, this.main_language, this.first_name, this.second_name, this.birth_date, this.adress, this.city, this.province, this.country, this.sex, this.tel, this.user_status, this.interests, this.admin_code);
           // SI HAY LOGIN, QUE ME LLEVE AL HOME
           Swal.fire({
           icon: "success",

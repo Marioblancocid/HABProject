@@ -316,7 +316,7 @@ p {
   flex-direction: row;
   align-items: center;
   min-height: 80vh;
-  min-width: 100vw;
+  min-width: 100%;
   justify-content: space-around;
 }
 .AddMeeting {
@@ -325,7 +325,7 @@ p {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 100vw;
+  min-width: 100%;
   min-height: 100vh;
 }
 .AddMeeting img {
@@ -333,7 +333,7 @@ p {
   max-width: 600px;
 }
 .menuadd {
-  min-width: 100vw;
+  min-width: 100%;
 }
 .AddMeeting h2 {
   margin: 1rem;

@@ -6,11 +6,11 @@
       <p><span>Nombre: </span>{{ profile.first_name ? profile.first_name : null}}</p>
       <p><span>Apellidos: </span>{{ profile.second_name ? profile.second_name : null}}</p>
       <p><span>Idioma nativo: </span>{{ profile.main_language ? profile.main_language : null}}</p>
+      <p><span>Email: </span>{{ profile.email ? profile.email : null}}</p>
       <p><span>Miembro desde: </span> {{ profile.creation_date ? formatDate(profile.creation_date) : null}}</p>
       <p><span>Cumpleaños: </span>{{ profile.birth_date ? formatDate(profile.birth_date) : null}}</p>
       <div v-show="checkId()">
       <hr>
-      <p><span>Email: </span>{{ profile.email ? profile.email : null}}</p>
       <p><span>Dirección: </span>{{ profile.adress ? profile.adress : null}}</p>
       <p><span>Ciudad: </span>{{ profile.city ? profile.city : null}}</p>
       <p><span>Provincia: </span>{{ profile.province ? profile.province : null}}</p>

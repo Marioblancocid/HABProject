@@ -103,7 +103,8 @@ export function registerUser(usuario, user_password, main_language, first_name, 
           sex: sex,
           tel: tel,
           user_status: user_status,
-          interests: interests
+          interests: interests,
+          admin_code: admin_code
         }, 
       });
       resolve()
@@ -159,6 +160,7 @@ export function setAuthToken(token){
   axios.defaults.headers.common["Authorization"] = token.token;
   localStorage.setItem(AUTH_TOKEN_KEY, token.token);
   localStorage.setItem('id', token.id);
+  localStorage.setItem('role', token.role);
 }
 
 // LOGOUT

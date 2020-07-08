@@ -18,7 +18,8 @@
         <option value="interests">Intereses</option>
       </select>
       </div>
-      <input
+      <input 
+        autocomplete="off"
         v-model.trim="search"
         id="search"
         name="bySearch"
@@ -248,7 +249,7 @@ outline:none;
 }
 .home {
   position: relative;
-  min-width: 100vw;
+  min-width: 100%;
   min-height: 100vh;
 }
 body {

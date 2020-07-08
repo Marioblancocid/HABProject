@@ -1,6 +1,6 @@
 <template>
   <div class="MenuCustom">
-      <router-link :to="{ name: 'Home'}"><img id="logo" src="../assets/logoapp1.png" alt=""></router-link>
+      <router-link :to="{ name: 'Landing'}"><img id="logo" src="../assets/logoapp1.png" alt=""></router-link>
  <div id="nav">
       <router-link  id='link' :to="{ name: 'Home'}">Home</router-link> 
       <router-link v-show="Loged" id='link' :to="{ name: 'Profile', params:{ id: this.userID }}">Mi perfil</router-link> 
@@ -23,6 +23,7 @@ export default {
     logoutUser(){
       clearLogin();
       this.$router.push('/');
+      location.reload();
       return
     },
     getUserName() {
@@ -68,6 +69,7 @@ export default {
 .MenuCustom {
   background: #3F3D56;
   margin: 0;
+  max-width: 100%;
   display: flex;
   justify-content: flex-end;
 }
